@@ -1,5 +1,6 @@
 (ns y-combinator-animation.scenes.sim
   (:require [quil.core :as q]
+            [quip.delay :as qpdelay]
             [quip.sprite :as qpsprite]
             [quip.tween :as qptween]
             [quip.scene :as qpscene]
@@ -16,13 +17,16 @@
 ;; complete we can replace them all with a new set of sprites so we
 ;; have a clean slate.
 
+(declare init)
+
+(def text-size (* 2 qpu/default-text-size))
+(def green [178 255 99 255])
+(def blue [144 180 253 255])
+(def white [230 230 230 255])
 
 ;; magic variable for pleasant vertical line spacing
 (def dy 1.3)
 
-(def text-size qpu/default-text-size)
-(def green [178 255 99 255])
-(def blue [144 180 253 255])
 
 (defn calc-center-pos
   [pos content size]
@@ -102,7 +106,7 @@
    (init-chars [(/ (q/width) 2)
                 (/ (q/height) 2)]
                content
-               (conj common/white 255)
+               white
                text-size
                qpu/default-font)
    (map
@@ -111,7 +115,7 @@
     (init-chars [(/ (q/width) 2)
                  (/ (q/height) 2)]
                 content
-                (conj common/white 255)
+                white
                 text-size
                 qpu/default-font))))
 
@@ -132,7 +136,8 @@
   [state]
   (-> state
       qpsprite/update-scene-sprites
-      qptween/update-sprite-tweens))
+      qptween/update-sprite-tweens
+      qpdelay/update-delays))
 
 (defn random-tween-x
   []
@@ -163,13 +168,19 @@
                 (fn [sprites]
                   (map (fn [{[cx cy :as coords] :init-coords :as s}]
                          (if (= :duplicate (:sprite-group s))
-                           (qptween/add-tween
-                            s
-                            (qptween/tween
-                             :pos
-                             -100
-                             :update-fn qptween/tween-y-fn
-                             :step-count 20))
+                           (-> s
+                               (qptween/add-tween
+                                (qptween/tween
+                                 :pos
+                                 -100
+                                 :update-fn qptween/tween-y-fn
+                                 :step-count 20))
+                               (qptween/add-tween
+                                (qptween/tween
+                                 :color
+                                 -150
+                                 :update-fn (fn [c d] (update c 3 + d))
+                                 :step-count 20)))
                            s))
                        sprites))))
 
@@ -262,51 +273,44 @@
 
    ;; make xs green (9 and 11)
    (fn [{:keys [current-scene] :as state}]
-     (let [content (get-in state [:scenes current-scene :content])
-           center-pos (calc-center-pos [(/ (q/width) 2)
-                                        (/ (q/height) 2)]
-                                       content
-                                       text-size)
-           p15 (char-pos center-pos [15 0] text-size)
-           p5 (char-pos center-pos [5 0] text-size)]
-       (update-in state [:scenes current-scene :sprites]
-                  (fn [sprites]
-                    (map (fn [{[cx cy :as coords] :init-coords
-                               [spx spy :as spos] :pos
-                               [r g b a] :color
-                               :as s}]
-                           (if (not= :duplicate (:sprite-group s))
-                             (cond
-                               (#{9 11} cx) (-> s
-                                                (qptween/add-tween
-                                                 (qptween/tween
-                                                  :color
-                                                  (- (nth green 0) r)
-                                                  :update-fn (fn [c d] (update c 0 + d))
-                                                  :step-count 30))
-                                                (qptween/add-tween
-                                                 (qptween/tween
-                                                  :color
-                                                  (- (nth green 1) r)
-                                                  :update-fn (fn [c d] (update c 1 + d))
-                                                  :step-count 30))
-                                                (qptween/add-tween
-                                                 (qptween/tween
-                                                  :color
-                                                  (- (nth green 2) r)
-                                                  :update-fn (fn [c d] (update c 2 + d))
-                                                  :step-count 30)))
-                               (or (< cx 8)
-                                   (< 12 cx)) (qptween/add-tween
-                                               s
+     (update-in state [:scenes current-scene :sprites]
+                (fn [sprites]
+                  (map (fn [{[cx cy :as coords] :init-coords
+                             [spx spy :as spos] :pos
+                             [r g b a] :color
+                             :as s}]
+                         (if (not= :duplicate (:sprite-group s))
+                           (cond
+                             (#{9 11} cx) (-> s
+                                              (qptween/add-tween
                                                (qptween/tween
                                                 :color
-                                                -255
-                                                :update-fn (fn [c d] (update c 3 + d))
+                                                (- (nth green 0) r)
+                                                :update-fn (fn [c d] (update c 0 + d))
                                                 :step-count 30))
-                               :else s)
-                             s))
-                         sprites)))))
+                                              (qptween/add-tween
+                                               (qptween/tween
+                                                :color
+                                                (- (nth green 1) g)
+                                                :update-fn (fn [c d] (update c 1 + d))
+                                                :step-count 30))
+                                              (qptween/add-tween
+                                               (qptween/tween
+                                                :color
+                                                (- (nth green 2) b)
+                                                :update-fn (fn [c d] (update c 2 + d))
+                                                :step-count 30)))
+                             (or (< cx 8)
+                                 (< 12 cx)) (qptween/add-tween
+                                             s
+                                             (qptween/tween
+                                              :color
+                                              -255
+                                              :update-fn (fn [c d] (update c 3 + d))
+                                              :step-count 30))
+                             :else s)
+                           s))
+                       sprites))))
 
    ;; move xs and parens
    (fn [{:keys [current-scene] :as state}]
@@ -358,32 +362,147 @@
 
    ;; hide with box
    (fn [{:keys [current-scene] :as state}]
-     (update-in state [:scenes current-scene :sprites]
-                (fn [sprites]
-                  (map (fn [{[cx cy :as coords] :init-coords :as s}]
-                         (if (and (not= :duplicate (:sprite-group s))
-                                  (#{9 11} cx))
-                           (-> s
-                               (assoc :color green)
-                               add-hide-tween)
-                           s))
-                       sprites))))
+     (-> state
+         (update-in [:scenes current-scene :sprites]
+                    (fn [sprites]
+                      (map (fn [{[cx cy :as coords] :init-coords :as s}]
+                             (if (and (not= :duplicate (:sprite-group s))
+                                      (#{9 11} cx))
+                               (-> s
+                                   (assoc :color green)
+                                   add-hide-tween)
+                               s))
+                           sprites)))
+         ;; add more letters
+         (qpdelay/add-delay
+          (qpdelay/delay
+            30
+            (fn [{:keys [current-scene] :as state}]
+              (let [content (get-in state [:scenes current-scene :content])
+                    center-pos (calc-center-pos [(/ (q/width) 2)
+                                                 (/ (q/height) 2)]
+                                                content
+                                                text-size)
+                    p7 (char-pos center-pos [7 0] text-size)
+                    p21 (char-pos center-pos [21 0] text-size)]
+                (update-in state [:scenes current-scene :sprites]
+                           (fn [sprites]
+                             (concat
+                              (remove (fn [{[cx cy] :init-coords :as s}]
+                                        (and (not= :duplicate (:sprite-group s))
+                                             (#{9 11} cx)))
+                                      sprites)
+                              (map (fn [cx c]
+                                     (-> (hidable-text-sprite
+                                          (str c)
+                                          p7
+                                          green
+                                          qpu/default-font
+                                          text-size)
+                                         (assoc :init-coords [cx 0])
+                                         (assoc :hidden 1)))
+                                   (range 1 14)
+                                   "(f [x] (x x))")
+                              (map (fn [cx c]
+                                     (-> (hidable-text-sprite
+                                          (str c)
+                                          p21
+                                          green
+                                          qpu/default-font
+                                          text-size)
+                                         (assoc :init-coords [cx 0])
+                                         (assoc :hidden 1)))
+                                   (range 15 28)
+                                   "(f [x] (x x))"))))))))))
+   
 
-   ;; @TODO: add more letters
+   ;; spread them out
+   (fn [{:keys [current-scene] :as state}]
+     (let [content (get-in state [:scenes current-scene :content])
+           center-pos (calc-center-pos [(/ (q/width) 2)
+                                        (/ (q/height) 2)]
+                                       content
+                                       text-size)]
+       (update-in state [:scenes current-scene :sprites]
+                  (fn [sprites]
+                    (map (fn [{[cx cy :as coords] :init-coords [spx spy :as spos] :pos :as s}]
+                           (if (and (not= :duplicate (:sprite-group s))
+                                    (= green (:color s))
+                                    (or (<= 1 cx 13)
+                                        (<= 15 cx 27)))
+                             (qptween/add-tween
+                              s
+                              (qptween/tween
+                               :pos
+                               (- (first (char-pos center-pos coords text-size)) spx)
+                               :update-fn qptween/tween-x-fn
+                               :step-count 30))
+                             s))
+                         sprites)))))
 
-   ;; hide with box
+   ;; remove box
    (fn [{:keys [current-scene] :as state}]
      (update-in state [:scenes current-scene :sprites]
                 (fn [sprites]
                   (map (fn [{[cx cy :as coords] :init-coords :as s}]
-                         (if (and (not= :duplicate (:sprite-group s))
-                                  (#{9 11} cx))
+                         (if (not= :duplicate (:sprite-group s))
                            (-> s
-                               (assoc :color green)
                                add-show-tween)
                            s))
                        sprites))))
-   ])
+
+   ;; fade to white
+   (fn [{:keys [current-scene] :as state}]
+     (update-in state [:scenes current-scene :sprites]
+                (fn [sprites]
+                  (map (fn [{[cx cy :as coords] :init-coords
+                             [spx spy :as spos] :pos
+                             [r g b a] :color
+                             :as s}]
+                         (if (not= :duplicate (:sprite-group s))
+                           (-> s
+                               (qptween/add-tween
+                                (qptween/tween
+                                 :color
+                                 (- (nth white 0) r)
+                                 :update-fn (fn [c d] (update c 0 + d))
+                                 :step-count 30))
+                               (qptween/add-tween
+                                (qptween/tween
+                                 :color
+                                 (- (nth white 1) g)
+                                 :update-fn (fn [c d] (update c 1 + d))
+                                 :step-count 30))
+                               (qptween/add-tween
+                                (qptween/tween
+                                 :color
+                                 (- (nth white 2) b)
+                                 :update-fn (fn [c d] (update c 2 + d))
+                                 :step-count 30)))
+                           s))
+                       sprites))))
+
+   ;; merge duplicate
+   (fn [{:keys [current-scene] :as state}]
+     (update-in state [:scenes current-scene :sprites]
+                (fn [sprites]
+                  (map (fn [{[cx cy :as coords] :init-coords :as s}]
+                         (if (= :duplicate (:sprite-group s))
+                           (-> s
+                               (qptween/add-tween
+                                (qptween/tween
+                                 :pos
+                                 100
+                                 :update-fn qptween/tween-y-fn
+                                 :step-count 20))
+                               (qptween/add-tween
+                                (qptween/tween
+                                 :color
+                                 150
+                                 :update-fn (fn [c d] (update c 3 + d))
+                                 :step-count 20)))
+                           s))
+                       sprites))))])
 
 (defn handle-mouse-pressed
   [{:keys [current-scene] :as state} e]
@@ -392,7 +511,7 @@
       (let [t-fn (nth transitions tn)]
         (-> (t-fn state)
             (update-in [:scenes current-scene :next-transition] inc)))
-      state)))
+      (assoc-in state [:scenes current-scene] (init)))))
 
 (defn init
   "Initialise this scene"
