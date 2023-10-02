@@ -577,6 +577,12 @@
             (update-in [:scenes current-scene :next-transition] inc)))
       (assoc-in state [:scenes current-scene] (init)))))
 
+(defn handle-key-pressed
+  [state e]
+  (if (= :space (:key e))
+    (qpscene/transition state :wrapped-self-application)
+    state))
+
 (defn init
   "Initialise this scene"
   []
@@ -585,5 +591,6 @@
      :draw-fn draw-self-application
      :update-fn update-self-application
      :mouse-pressed-fns [handle-mouse-pressed]
+     :key-pressed-fns [handle-key-pressed]
      :next-transition 0
      :content initial-content}))

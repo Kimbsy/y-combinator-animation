@@ -21,7 +21,7 @@
             :size           [1600 900]
             :setup          setup
             :init-scenes-fn init-scenes
-            :current-scene  :wrapped-self-application}))
+            :current-scene  :self-application}))
 
 (defn -main
   "Run the game"
