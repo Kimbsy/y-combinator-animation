@@ -589,7 +589,7 @@
                            :else s))
                        sprites))))
 
-   ;; merge duplicate, make 9, 10, 17 blue (f ... )
+   ;; merge duplicate, make 9, 10, 17 orange (f ... )
    (fn [{:keys [current-scene] :as state}]
      (-> state
          (update-in [:scenes current-scene :sprites]
@@ -632,7 +632,82 @@
                                        :update-fn (fn [c d] (update c 2 + d))
                                        :step-count 30)))
                                  s)))
-                           sprites)))))])
+                           sprites)))))
+
+   ;; Add wrapping (f ... )
+   (fn [{:keys [current-scene] :as state}]
+     (let [content (get-in state [:scenes current-scene :content])
+           center-pos (calc-center-pos (content-pos)
+                                       content
+                                       text-size)
+           p-6 (char-pos center-pos [-6 0] text-size)
+           p-5 (char-pos center-pos [-5 0] text-size)
+           p40 (char-pos center-pos [40 0] text-size)]
+       (update-in state [:scenes current-scene :sprites]
+                  (fn [sprites]
+                    (concat
+                     sprites
+                     (map (fn [s]
+                            (qptween/add-tween
+                             s
+                             (qptween/tween
+                              :color
+                              255
+                              :update-fn (fn [c d] (update c 3 + d))
+                              :step-count 20)))
+                          [(hidable-text-sprite "(" p-6 (assoc orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite "f" p-5 (assoc orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite ")" p40 (assoc orange 3 0) qpu/default-font text-size)]))))))
+
+   ;; Add wrapping (f ... )
+   (fn [{:keys [current-scene] :as state}]
+     (let [content (get-in state [:scenes current-scene :content])
+           center-pos (calc-center-pos (content-pos)
+                                       content
+                                       text-size)
+           p-9 (char-pos center-pos [-9 0] text-size)
+           p-8 (char-pos center-pos [-8 0] text-size)
+           p41 (char-pos center-pos [41 0] text-size)]
+       (update-in state [:scenes current-scene :sprites]
+                  (fn [sprites]
+                    (concat
+                     sprites
+                     (map (fn [s]
+                            (qptween/add-tween
+                             s
+                             (qptween/tween
+                              :color
+                              255
+                              :update-fn (fn [c d] (update c 3 + d))
+                              :step-count 20)))
+                          [(hidable-text-sprite "(" p-9 (assoc orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite "f" p-8 (assoc orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite ")" p41 (assoc orange 3 0) qpu/default-font text-size)]))))))
+
+   ;; Add wrapping (f ... )
+   (fn [{:keys [current-scene] :as state}]
+     (let [content (get-in state [:scenes current-scene :content])
+           center-pos (calc-center-pos (content-pos)
+                                       content
+                                       text-size)
+           p-12 (char-pos center-pos [-12 0] text-size)
+           p-11 (char-pos center-pos [-11 0] text-size)
+           p42 (char-pos center-pos [42 0] text-size)]
+       (update-in state [:scenes current-scene :sprites]
+                  (fn [sprites]
+                    (concat
+                     sprites
+                     (map (fn [s]
+                            (qptween/add-tween
+                             s
+                             (qptween/tween
+                              :color
+                              255
+                              :update-fn (fn [c d] (update c 3 + d))
+                              :step-count 20)))
+                          [(hidable-text-sprite "(" p-12 (assoc orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite "f" p-11 (assoc orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite ")" p42 (assoc orange 3 0) qpu/default-font text-size)]))))))])
 
 (defn handle-mouse-pressed
   [{:keys [current-scene] :as state} e]
