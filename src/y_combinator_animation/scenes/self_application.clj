@@ -145,8 +145,10 @@
   "Called each frame, draws the current scene to the screen"
   [state]
   (qpu/background common/grey)
-  
-  (qpsprite/draw-scene-sprites state))
+  (qpsprite/draw-scene-sprites state)
+
+  (when (:recording? state)
+    (q/save-frame "output/self-application-####.jpg")))
 
 (defn update-self-application
   "Called each frame, update the sprites in the current scene"
@@ -579,9 +581,11 @@
 
 (defn handle-key-pressed
   [state e]
-  (if (= :space (:key e))
-    (qpscene/transition state :wrapped-self-application)
-    state))
+  (cond
+    (= :space (:key e)) (qpscene/transition state :wrapped-self-application)
+    (= :r (:key e)) (do (prn "Recording? " (not (:recording? state)))
+                        (update state :recording? not))
+    :else state))
 
 (defn init
   "Initialise this scene"

@@ -146,14 +146,11 @@
 (defn draw-wrapped-self-application
   "Called each frame, draws the current scene to the screen"
   [state]
-  (qpu/background common/grey)
+  (qpu/background common/grey)  
+  (qpsprite/draw-scene-sprites state)
 
-  ;; ;; draw cross at mouse pos for alignment debugging
-  ;; (q/stroke 255)
-  ;; (q/line 0 (q/mouse-y) (q/width) (q/mouse-y))
-  ;; (q/line (q/mouse-x) 0 (q/mouse-x) (q/height))
-  
-  (qpsprite/draw-scene-sprites state))
+  (when (:recording? state)
+    (q/save-frame "output/wrapped-self-application-####.jpg")))
 
 (defn update-wrapped-self-application
   "Called each frame, update the sprites in the current scene"
@@ -648,9 +645,11 @@
 
 (defn handle-key-pressed
   [state e]
-  (if (= :space (:key e))
-    (qpscene/transition state :self-application)
-    state))
+  (cond
+    (= :space (:key e)) (qpscene/transition state :self-application)
+    (= :r (:key e)) (do (prn "Recording? " (not (:recording? state)))
+                        (update state :recording? not))
+    :else state))
 
 (defn init
   "Initialise this scene"
