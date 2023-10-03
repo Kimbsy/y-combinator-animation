@@ -570,13 +570,19 @@
                                s))
                            sprites)))))])
 
+;; @TODO: auto-trigger transitions
+;; [74 154 192 233 338 424 499 530 570 619 668]
+
 (defn handle-mouse-pressed
-  [{:keys [current-scene] :as state} e]
+  [{:keys [current-scene clicks global-frame] :as state} e]
   (let [tn (get-in state [:scenes current-scene :next-transition])]
     (if (< tn (count transitions))
-      (let [t-fn (nth transitions tn)]
+      (let [t-fn (nth transitions tn)
+            new-clicks (conj clicks global-frame)]
+        (prn new-clicks)
         (-> (t-fn state)
-            (update-in [:scenes current-scene :next-transition] inc)))
+            (update-in [:scenes current-scene :next-transition] inc)
+            (assoc :clicks new-clicks)))
       (assoc-in state [:scenes current-scene] (init)))))
 
 (defn handle-key-pressed
