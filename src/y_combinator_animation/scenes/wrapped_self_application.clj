@@ -709,20 +709,24 @@
                            (hidable-text-sprite "f" p-11 (assoc orange 3 0) qpu/default-font text-size)
                            (hidable-text-sprite ")" p42 (assoc orange 3 0) qpu/default-font text-size)]))))))])
 
-;; @TODO: auto-trigger transitions
-;; [74 154 192 233 338 424 499 530 570 619 668 726 760 780]
-
 (defn handle-mouse-pressed
-  [{:keys [current-scene clicks global-frame] :as state} e]
-  (let [tn (get-in state [:scenes current-scene :next-transition])]
-    (if (< tn (count transitions))
-      (let [t-fn (nth transitions tn)
-            new-clicks (conj clicks global-frame)]
-        (prn new-clicks)
-        (-> (t-fn state)
-            (update-in [:scenes current-scene :next-transition] inc)
-            (assoc :clicks new-clicks)))
-      (assoc-in state [:scenes current-scene] (init)))))
+  [{:keys [current-scene] :as state} e]
+  (if (= :left (:button e))
+    ;; manual transition
+    (let [tn (get-in state [:scenes current-scene :next-transition])]
+      (if (< tn (count transitions))
+        (let [t-fn (nth transitions tn)]
+          (-> (t-fn state)
+              (update-in [:scenes current-scene :next-transition] inc)))
+        (assoc-in state [:scenes current-scene] (init))))
+    ;; automatic transitions
+    (-> state
+        (assoc-in [:scenes current-scene] (init))
+        (assoc-in [:scenes current-scene :delays]
+                  (qpdelay/sequential-delays
+                   (map (fn [d f] [d f])
+                        [74 80 38 65 105 86 75 31 40 49 49 88 34 25]
+                        transitions))))))
 
 (defn handle-key-pressed
   [state e]

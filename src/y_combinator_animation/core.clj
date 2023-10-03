@@ -7,8 +7,7 @@
 (defn setup
   "The initial state of the game"
   []
-  {:recording? false
-   :clicks []})
+  {:recording? false})
 
 (defn init-scenes
   "Map of scenes in the game"
