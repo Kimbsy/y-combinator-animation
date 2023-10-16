@@ -10,12 +10,12 @@
        (f (fn [y]
             ((x x) y)))))))
 
-(defn factorial
-  [do-recur]
-  (fn [n]
-    (if (= n 0)
-      1
-      (* n (do-recur (- n 1))))))
+(def factorial
+  (fn [do-recur]
+    (fn [n]
+      (if (= n 0)
+        1
+        (* n (do-recur (- n 1)))))))
 
 ((Y factorial) 5)
 ;; => 120
