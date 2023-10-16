@@ -2,13 +2,13 @@
 
 ;; Achieving unbounded recursion through fixed-point combinatorial instantiation of self-applicative lambda abstractions
 
-(defn Y
-  [f]
-  ((fn [x]
-     (x x))
-   (fn [x]
-     (f (fn [y]
-          ((x x) y))))))
+(def Y
+  (fn [f]
+    ((fn [x]
+       (x x))
+     (fn [x]
+       (f (fn [y]
+            ((x x) y)))))))
 
 (defn factorial
   [do-recur]
