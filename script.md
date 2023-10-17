@@ -39,24 +39,26 @@ Okayyy so I see some anonymous functions, lots of anonymous functions... lots of
 
 So there's a chance that some of you haven't used Clojure before (see me afterwards, I'll get you hooked up). Here's what you need to know to follow along.
 
+### Call a function
+
+``` Clojure
+(inc 42)     ;; => 43
+;; basically the same as inc(42)
+
+(inc (inc 42))    ;; => 44
+```
+
+We call a function by wrapping it in parens along with its arguments. We can nest them however we like.
+
 ### Def a binding
 
 ``` Clojure
 (def foo 42)
+
+(inc foo)   ;; => 43
 ```
 
 Pretty straightforward, we can create a variable called `foo` and give it a value 42.
-
-### Call a function
-
-``` Clojure
-(inc foo)     ;; => 43
-;; basically the same as inc(foo)
-
-(inc (inc foo))    ;; => 44
-```
-
-We call a function by wrapping it in parens along with its arguments. We can nest them however we like.
 
 ### Lambda functions
 
