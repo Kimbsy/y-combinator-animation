@@ -14,11 +14,11 @@ So today we're going to take a look at the Y Combinator. We'll look at what it i
 
 Let's start by taking a look at the definition of the Y Combinator, a pretty sensible place to start.
 
-> Achieving unbounded recursion through fixed-point combinatorial instantiation of self-applicative lambda abstractions
+> A method for achieving unbounded recursion through fixed-point combinatorial instantiation of self-applicative lambda abstractions
 
 Okayyy I mean that's pretty thorough, and we've got to presume technically correct. But it's not terribly enlightening.
 
-So what do we do when the documentation goes over our head? That's right we dive blindly into the codebase to find the source in the hopes that it will all start making sense. So let's look at an implementation of the Y Combinator in Clojure.
+So what do we do when the documentation goes over our head? That's right we dive blindly into the source code in the hopes that it will all start making sense. So let's look at an implementation of the Y Combinator in Clojure.
 
 ``` Clojure
 ;; @TODO: add helpful docstring
@@ -61,9 +61,12 @@ Pretty straightforward, we can create a variable called `foo` and give it a valu
 ### Lambda functions
 
 ``` Clojure
+(fn [param1 param2 ...] (do stuff here))
+
 ;; define a +5 function
 (def plus-five (fn [n] (+ n 5))
 
+(plus-5 foo)             ;; => 47
 ((fn [n] (+ n 5)) foo)   ;; => 47
 ```
 
@@ -72,7 +75,7 @@ Anonymous functions have a pretty straightforward syntax. We can use them in pla
 --------
 # Part 2
 
-Okay, so back to the Y Combinator. The technical definition was a bit obtuse, and the implementation on it's own wasn't too much help. Let's break it down, starting from the bottom up.
+Okay, so back to the Y Combinator. The technical definition was a bit obtuse, and the implementation on it's own wasn't too much help. Let's try a different approach and break it down, starting from the bottom up.
 
 ## What is it used for?
 
@@ -82,7 +85,7 @@ When does that happen? What languages don't have recursion? Or, I don't know, ot
 
 Well if you're working in the Lambda Calculus then you don't have access to any of these. How often does one work with a purely mathematical computational calculus? Arguably not every day.
 
-If you're writing your own language, and you're trying to do so in a pure functional way with only immutable values, than you'll find implementing recursion to be pretty tricky.
+Maybe you're writing your own language, and you're trying to do so in a pure functional way with only immutable values, then you'll find implementing recursion to be pretty tricky.
 
 Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad set of circumstances... 
 
