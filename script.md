@@ -1,4 +1,4 @@
-# Part 1
+# Part 1 - intro and primer
 
 ## Talk Intro
 
@@ -32,6 +32,24 @@ So what do we do when the documentation goes over our head? That's right we dive
 ```
 
 Okayyy so I see some anonymous functions, lots of anonymous functions... lots of nested anonymous functions. This isn't exactly self-documenting code here :/
+
+So the technical definition was a bit obtuse, and the implementation on it's own wasn't too much help. Let's try a different approach and break it down, starting from the bottom up.
+
+## What is it used for?
+
+> Doing recursion in languages that don’t have recursion.
+
+When does that happen? What languages don't have recursion? Or, I don't know, other lesser forms of iterating. There's mapping, filtering, reduction, transduction... I dunno, for loops?
+
+Well if you're working in the Lambda Calculus then you don't have access to any of these. How often does one work with a purely mathematical computational calculus? Arguably not every day.
+
+Maybe you're writing your own language, and you're trying to do so in a pure functional way with only immutable values, then you'll find implementing recursion to be pretty tricky.
+
+Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad set of circumstances... 
+
+## How does it work?
+
+So the Y Combinator somehow gives us recursion without using recursion. What kind of magic allows this? Turns out it's just good old fashioned functions, albeit some pretty abstract and difficult to think about functions.
 
 ## Clojure primer
 
@@ -73,25 +91,9 @@ Pretty straightforward, we can create a variable called `foo` and give it a valu
 Anonymous functions have a pretty straightforward syntax. We can use them in place of named functions.
 
 --------
-# Part 2
+# Part 2 - self application of self application
 
-Okay, so back to the Y Combinator. The technical definition was a bit obtuse, and the implementation on it's own wasn't too much help. Let's try a different approach and break it down, starting from the bottom up.
-
-## What is it used for?
-
-> Doing recursion in languages that don’t have recursion.
-
-When does that happen? What languages don't have recursion? Or, I don't know, other lesser forms of iterating. There's mapping, filtering, reduction, transduction... I dunno, for loops?
-
-Well if you're working in the Lambda Calculus then you don't have access to any of these. How often does one work with a purely mathematical computational calculus? Arguably not every day.
-
-Maybe you're writing your own language, and you're trying to do so in a pure functional way with only immutable values, then you'll find implementing recursion to be pretty tricky.
-
-Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad set of circumstances... 
-
-## How does it work?
-
-So the Y Combinator somehow gives us recursion without using recursion. What kind of magic allows this? Turns out it's just good old fashioned functions, albeit some pretty abstract and difficult to think about functions.
+Okay, so back to the Y Combinator.
 
 To get started we want to look at a delightful little function, the self-application function.
 
@@ -119,8 +121,12 @@ To get started we want to look at a delightful little function, the self-applica
 - we have the ability to create an infinite sequence of nested calls to a function.
 - how can we write a function that wants this?
 
+## That extra lambda there, what does that do?
+
+- explain the delayed evaluation by wrapping in a lambda allows the evaluation to complete, giving us a function we can call at runtime.
+
 --------
-# Part 3
+# Part 3 - putting it all together
 
 ## Actually getting stuff done
 
@@ -149,3 +155,10 @@ We then invoke the Y Combinator on our factorial function. The function that thi
 
 (factorial 5)     ;; => 120
 ```
+
+## Outro
+
+- thanks, hopefully helpful
+- resources to look at
+- feel free to talk to me
+- questions?
