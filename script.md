@@ -1,12 +1,13 @@
+# Part 1
+
 ## Talk Intro
 
 Hi, I'm Dave, I'm a software engineer and amateur programming language designer. I work using Clojure for a company called Riverford Organic Farmers, so if you like lisps, functional programming or vegetables, come talk to me after.
 
+<!-- ... why am I talking about this? I was writing a toy language and needed to be able to iterate, but it was purely functional so had no mutation, our functions couldn't be defined referring to themselves. The y combinator is a solution to this, I tried it and it worked straight away. I felt uneasy that I didn't know how it was doing what it was doing, so I started trying to figure it out. -->
 
-... why am I talking about this? I was writing a toy language and needed to be able to iterate, but it was purely functional so had no mutation, our functions couldn't be defined referring to themselves. The y combinator is a solution to this, I tried it and it worked straight away. I felt uneasy that I didn't know how it was doing what it was doing, so I started trying to figure it out.
 
-
-So today we're going to take a look at the Y Combinator, and hopefully we'll be able to develop some intuition as to how it works.
+So today we're going to take a look at the Y Combinator. We'll look at what it is, what problem it solves, and hopefully we'll be able to develop some intuition as to how it works.
 
 
 ## Y Combinator intro
@@ -20,6 +21,7 @@ Okayyy I mean that's pretty thorough, and we've got to presume technically corre
 So what do we do when the documentation goes over our head? That's right we dive blindly into the codebase to find the source in the hopes that it will all start making sense. So let's look at an implementation of the Y Combinator in Clojure.
 
 ``` Clojure
+;; @TODO: add helpful docstring
 (def Y
   (fn [f]
     ((fn [x]
@@ -30,10 +32,6 @@ So what do we do when the documentation goes over our head? That's right we dive
 ```
 
 Okayyy so I see some anonymous functions, lots of anonymous functions... lots of nested anonymous functions. This isn't exactly self-documenting code here :/
-
-@TODO: add helpful docstring
-
-## 
 
 ## Clojure primer
 
@@ -71,6 +69,29 @@ Pretty straightforward, we can create a variable called `foo` and give it a valu
 
 Anonymous functions have a pretty straightforward syntax. We can use them in place of named functions.
 
+--------
+# Part 2
+
+Okay, so back to the Y Combinator. The technical definition was a bit obtuse, and the implementation on it's own wasn't too much help. Let's break it down, starting from the bottom up.
+
+## What is it used for?
+
+> Doing recursion in languages that don’t have recursion.
+
+When does that happen? What languages don't have recursion? Or, I don't know, other lesser forms of iterating. There's mapping, filtering, reduction, transduction... I dunno, for loops?
+
+Well if you're working in the Lambda Calculus then you don't have access to any of these. How often does one work with a purely mathematical computational calculus? Arguably not every day.
+
+If you're writing your own language, and you're trying to do so in a pure functional way with only immutable values, than you'll find implementing recursion to be pretty tricky.
+
+Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad set of circumstances... 
+
+## How does it work?
+
+So the Y Combinator somehow gives us recursion without using recursion. What kind of magic allows this? Turns out it's just good old fashioned functions, albeit some pretty abstract and difficult to think about functions.
+
+To get started we want to look at a delightful little function, the self-application function.
+
 ## self application function
 
 ``` Clojure
@@ -95,16 +116,33 @@ Anonymous functions have a pretty straightforward syntax. We can use them in pla
 - we have the ability to create an infinite sequence of nested calls to a function.
 - how can we write a function that wants this?
 
-## our factorial function
+--------
+# Part 3
 
-- takes an f (the next iteration)
-- if we want to recur, we use f instead
+## Actually getting stuff done
+
+<!-- what does a real function f look like, let's do an example -->
+
+## the factorial step function
+
+- takes a recur-fn (the next iteration)
+- returns a function which is a closure over the recur-fn
+- this closure implements one step of our algorithm
+- if we want to end, we return a value, if we want to recur, we use recur-fn instead
 
 ``` Clojure
-(def factorial
+(def factorial-step
   (fn [recur-fn]
     (fn [n]
       (if (= n 0)
         1
         (* n (recur-fn (- n 1)))))))
+```
+
+We then invoke the Y Combinator on our factorial function. The function that this returns is a closure over a closure over a closure ad infinitum. When these iteration steps are evaluated each gets the chance to return a value and end the evaluation, or dive one level deeper.
+
+``` Clojure
+(def factorial (Y factorial-step))
+
+(factorial 5)     ;; => 120
 ```
