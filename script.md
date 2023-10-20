@@ -82,7 +82,7 @@ Pretty straightforward, we can create a variable called `foo` and give it a valu
 (fn [param1 param2 ...] (do stuff here))
 
 ;; define a +5 function
-(def plus-five (fn [n] (+ n 5))
+(def plus-five (fn [n] (+ n 5)))
 
 (plus-5 foo)             ;; => 47
 ((fn [n] (+ n 5)) foo)   ;; => 47
