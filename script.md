@@ -113,7 +113,7 @@ So what can `x` be? We know we're going to call it, so `x` has to be a function,
 
 - do we want to go through the identity example?
 
-## self application applied to itself
+### self application applied to itself
 
 Now what if the function that we pass into the self-application function, what if this `x`, was the self-application function. What would that do? What would it look like?
 
@@ -124,6 +124,10 @@ Now what if the function that we pass into the self-application function, what i
 
 
 ## wrapped self application function
+
+``` Clojure
+(fn [x] (f (x x)))
+```
 
 - similar to self application but wraps body in call to f
 - walk through how it evaluates to nested calls to f
