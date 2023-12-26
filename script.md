@@ -142,7 +142,7 @@ Ok, so with this function we have the ability to create an infinite stack of nes
 
 Let's look back at the source code for the Y Combinator now that we're a bit more familiar with some of it's pieces.
 
-The Y combinator is a function which takes an `f`.
+The Y Combinator is a function which takes an `f`.
 
 It then calls this lambda function on this one.
 
@@ -152,7 +152,7 @@ And what are we passing into the self application function? This thing.
 
 If you squint a bit this is kinda like the wrapped self application function, we have the call to `f` wrapping the self application of `(x x)` it just has another nested lambda inside it where normally we would just have `(f (x x))`. So what is this?
 
-Essentially this is our escape hatch. It's what stops the infinite loop of evaluation from being infinite.
+Essentially this is our escape hatch, we'll call it the delayed evaluation lambda. It's what stops the infinite loop of evaluation from being infinite.
 
  <!-- @TODO: clean this explanation up -->
 
@@ -161,8 +161,6 @@ Essentially this is our escape hatch. It's what stops the infinite loop of evalu
 The key difference is _when_ the function returned by (x x) is created. In the simple case it is calculated during the top level expression evaluation, whereas in the second case it is only created when the (fn [y]) lambda is invoked.
 
 instead of our expression evaluating to an infinite stack, it evaluated to a single iteration which has a function that creates the next iteration. but he important part it that it doesn't _have_ to create the next step.
-
-<!-- TODO: mention closures? -->
 
 --------
 # Part 3 - putting it all together
@@ -173,13 +171,6 @@ All of this is pretty difficult to think about in the abstract. Also we've been 
 
 ## the factorial step function
 
-<!-- @TODO: script this part onwards -->
-
-- takes a recur-fn (the next iteration)
-- returns a function which is a closure over the recur-fn
-- this closure implements one step of our algorithm
-- if we want to end, we return a value, if we want to recur, we use recur-fn instead
-
 ``` Clojure
 (def factorial-step
   (fn [recur-fn]
@@ -189,7 +180,15 @@ All of this is pretty difficult to think about in the abstract. Also we've been 
         (* n (recur-fn (- n 1)))))))
 ```
 
-We then invoke the Y Combinator on our factorial function. The function that this returns is a closure over a closure over a closure ad infinitum. When these iteration steps are evaluated each gets the chance to return a value and end the evaluation, or dive one level deeper.
+Ok so calculating the factorial of a number isn't super exciting, but it's a well understood problem that has a simple recursive solution. Perfect for our needs.
+
+So this function `factorial-step` is going to be our `f`. It's a function that takes a single argument `recur-fn` and returns a function that computes the current step of the iteration. If we reach a base state we can return a value, otherwise we can recurse a level deeper by calling `recur-fn`.
+
+Now `recur-fn` is our wrapped self application function with the delayed evaluation lambda that we discussed, if we don't invoke it then the stack of nested calls to `f` can finally return a value, if we do invoke it we create an additional nested call to `f` and try again.
+
+We can finally invoke the Y Combinator on our `factorial-step` function. The function that this returns calculates the first step of the iteration and  contains a reference to a function that creates the next step (which contains a reference to the function that creates the _next_ step) etc. etc.
+
+When we invoke this self-building stack of functions passing in a number `n`, we will perform steps of the factorial algorithm until we reach the base case where `n` is `0`, that step will return the number `1`, which will get returned back up the stack to be multiplied by each other step until we finally return the factorial of our inital input `n`.
 
 ``` Clojure
 (def factorial (Y factorial-step))
