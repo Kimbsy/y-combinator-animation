@@ -123,9 +123,9 @@ So what we end up with is another expression, the same expression. Now the rules
 
 We're not allowed to stop, this evaluation will keep going forever.
 
-So this is a loop. It's an infinite loop, and it does nothing, but it's still a loop.
+This is a loop, it does nothing and we can't stop it, but it's still a loop.
 
-Two questions arise. Can we inject work into this loop? Can we escape?
+Two questions naturally arise. Can we somehow inject work into each iteration of this loop? And can we escape once enough work has been done?
 
 ## wrapped self application function
 
