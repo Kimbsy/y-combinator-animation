@@ -42,9 +42,11 @@ So the technical definition was a bit obtuse, and the implementation on it's own
 
 When does that happen? What languages don't have recursion? Or, I don't know, other lesser forms of iterating. There's mapping, filtering, reduction, transduction... I dunno, for loops?
 
-Well maybe you're working in the Lambda Calculus then you don't have access to any of these. How often does one do meaningful work in an abstract computational calculus? Arguably not every day.
+Well maybe you're a Mathematician working in the Lambda Calculus then you don't have access to any of these. <CLICK> How often does one do meaningful work in an abstract computational calculus? Arguably not every day.
 
-Maybe you're writing your own language, and you're trying to do so in a purely functional way with only immutable values, and you've run into the problem that you can't allow functions to refer to themselves in their definition because they don't exist yet.
+Maybe you're writing your own language, and you're trying to do so in a purely functional way with only immutable values <CLICK>.
+
+<CLICK>
 
 Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad set of circumstances... 
 
@@ -78,6 +80,8 @@ We call a function by wrapping it in parens along with its arguments. We can nes
 Pretty straightforward, we can create a variable called `foo` and give it a value 42. We can then use it anywhere you'd expect to be able to.
 
 ### Lambda functions
+
+;; @TODO: fix plus-5 plus-five
 
 ``` Clojure
 (fn [param1 param2 ...] (stuff here))
@@ -132,13 +136,20 @@ Two questions naturally arise. Can we somehow inject work into each iteration of
 (fn [x] (f (x x)))
 ```
 
+ <!-- @TODO: cut this way down -->
 Here's another function which we'll call the wrapped self application function. It's very similar to the standard self application function, but we have this extra call to some function `f` that encloses the self application bit. We don't need to know what `f` is at this point, but just assume it is a function that exists (pretty low bar).
 
 - walk through how it evaluates to nested calls to f
 
-Ok, so with this function we have the ability to create an infinite stack of nested calls to some function `f`. We have, in essence injected a call to `f` into each iteration of our original infinite loop.
+Ok, so with this function we have the ability to create an infinite stack of nested calls to some function `f`.
 
-## That extra lambda there, what does that do?
+<!-- @TODO: can we give an example of how we cold use an inifinte stakc of f's? -->
+
+## Ending the loop
+
+<!-- @TODO: describe how we'll end things?? -->
+
+## Back to the Y Combinator
 
 Let's look back at the source code for the Y Combinator now that we're a bit more familiar with some of it's pieces.
 
@@ -154,7 +165,7 @@ If you squint a bit this is kinda like the wrapped self application function, we
 
 Essentially this is our escape hatch, we'll call it the delayed evaluation lambda. It's what stops the infinite loop of evaluation from being infinite.
 
- <!-- @TODO: clean this explanation up -->
+ <!-- @TODO: clean this explanation up, add slides -->
 
 (x x) return a function of one argument, so if we wanted to invoke it we would have something like ((x x) foo). we can abstract this with a lambda (fn [y] ((x x) y)) This is a function that takes one argument y and passes it to the function created by self application of x.
 
@@ -186,6 +197,9 @@ So this function `factorial-step` is going to be our `f`. It's a function that t
 
 Now `recur-fn` is our wrapped self application function with the delayed evaluation lambda that we discussed, if we don't invoke it then the stack of nested calls to `f` can finally return a value, if we do invoke it we create an additional nested call to `f` and try again.
 
+
+<!-- @TODO: this bit was crap we haven't understood the Y Combintor enough to just say `(Y factorial-step)` -->
+
 We can finally invoke the Y Combinator on our `factorial-step` function. The function that this returns calculates the first step of the iteration and  contains a reference to a function that creates the next step (which contains a reference to the function that creates the _next_ step) etc. etc.
 
 When we invoke this self-building stack of functions passing in a number `n`, we will perform steps of the factorial algorithm until we reach the base case where `n` is `0`, that step will return the number `1`, which will get returned back up the stack to be multiplied by each other step until we finally return the factorial of our inital input `n`.
@@ -198,8 +212,12 @@ When we invoke this self-building stack of functions passing in a number `n`, we
 
 ## Outro
 
+<!-- @TODO: better summation, talk about small but complex, building up hard to hold abstact concepts, ending with usable thing -->
+
+<!-- @TODO: as they say in the forge, the tao that can be named is not the eternal tao, someone's description of enlightenment is not enlightenment. if this felt close to interesting, you sould have a play with it yourself, when it clicks its staggeringly beautiful -->
+
 I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it a bit more approachable.
 
-I find it fundamentally delightful that the self application of self application, a concept which seems so abstract at first turns out the be the lynch pin of a surprisingly usable method of iteration.
+I find it fundamentally delightful that the sel f application of self application, a concept which seems so abstract at first turns out the be the lynch pin of a surprisingly usable method of iteration.
 
 If this kind of stuff interests you I can recommend the following books

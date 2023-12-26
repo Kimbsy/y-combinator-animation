@@ -67,7 +67,7 @@
    ;; define a +5 function
    (def plus-five (fn [n] (+ n 5)))
 
-   (plus-5 foo)             ;; => 47
+   (plus-five foo)          ;; => 47
    ((fn [n] (+ n 5)) foo)   ;; => 47
 
 
