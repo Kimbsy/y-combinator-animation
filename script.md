@@ -66,7 +66,7 @@ So there's a chance that some of you haven't used Clojure before (see me afterwa
 (inc (inc 42))    ;; => 44
 ```
 
-We call a function by wrapping it in parens along with its arguments. We can nest them however we like. The expressions get evaluated inside to out, so the internal `(inc 42)` is turned into 43 and then passed into the second inc.
+We call a function by wrapping it in parens along with its arguments. We can nest them however we like. The expressions get evaluated inside to out, so in the second example here the internal `(inc 42)` is turned into 43 and then passed into the second inc which gives us 44.
 
 ### Defining a variable
 
@@ -81,7 +81,7 @@ Pretty straightforward, we can create a variable called `foo` and give it a valu
 ### Lambda functions
 
 ``` Clojure
-(fn [param1 param2 ...] (do stuff here))
+(fn [param1 param2 ...] (stuff here))
 
 ;; define a +5 function
 (def plus-five (fn [n] (+ n 5)))
@@ -92,7 +92,7 @@ Pretty straightforward, we can create a variable called `foo` and give it a valu
 
 Anonymous functions have a pretty straightforward syntax. We start with `fn`, then a vector of parameters, and finally a body expression. The function will return the result of evaluating the body.
 
-We can bind them to names and use them like variables, or we can use the lambda expression directly in place of a function name.
+We can give lambdas names with `def` and use them like variables, or we can use the lambda expression directly in place of a function name.
 
 --------
 # Part 2 - self application of self application
@@ -111,17 +111,21 @@ So this is a lambda function, it's small and straightforward but has some intere
 
 So what can `x` be? We know we're going to call it, so `x` has to be a function, we also know that `x` takes a single argument, and that argument is itself. So `x` must be a function that takes a single function as its argument.
 
-- do we want to go through the identity example?
+Can anyone think of a function that takes a single function as it's argument? What about the self application function? It's a function and it takes a single argument `x`, which as we discussed must itself be a function.
 
 ### self application applied to itself
 
-Now what if the function that we pass into the self-application function, what if this `x`, was the self-application function. What would that do? What would it look like?
+So we're considering the idea that we could pass the self application function to the self application function. What would that do? What would it look like?
 
 - walk through how it evaluates to itself.
-- not allowed to stop, keeps going for ever, will crash your computer.
-- this is a loop, an infinite one, but still a loop.
-- can we inject work into the loop? can we escape?
 
+So what we end up with is another expression, the same expression. Now the rules of Lisp evaluation say that we can't juts stop evaluating, we need to evaluate this new expression too. Of course this will just get us back to where we started again.
+
+We're not allowed to stop, this evaluation will keep going forever.
+
+So this is a loop. It's an infinite loop, and it does nothing, but it's still a loop.
+
+Two questions arise. Can we inject work into this loop? Can we escape?
 
 ## wrapped self application function
 
@@ -129,23 +133,48 @@ Now what if the function that we pass into the self-application function, what i
 (fn [x] (f (x x)))
 ```
 
-- similar to self application but wraps body in call to f
+Here's another function which we'll call the wrapped self application function. It's very similar to the standard self application function, but we have this extra call to some function `f` that encloses the self application bit. We don't need to know what `f` is at this point, but just assume it is a function that exists (pretty low bar).
+
 - walk through how it evaluates to nested calls to f
-- we have the ability to create an infinite sequence of nested calls to a function.
-- how can we write a function that wants this?
+
+Ok, so with this function we have the ability to create an infinite stack of nested calls to some function `f`. We have, in essence injected a call to `f` into each iteration of our original infinite loop.
 
 ## That extra lambda there, what does that do?
 
-- explain the delayed evaluation by wrapping in a lambda allows the evaluation to complete, giving us a function we can call at runtime.
+Let's look back at the source code for the Y Combinator now that we're a bit more familiar with some of it's pieces.
+
+The Y combinator is a function which takes an `f`.
+
+It then calls this lambda function on this one.
+
+Look right here we have a function which takes an `x` and calls `x` with `x` as it's argument. The self application function!
+
+And what are we passing into the self application function? This thing.
+
+If you squint a bit this is kinda like the wrapped self application function, we have the call to `f` wrapping the self application of `(x x)` it just has another nested lambda inside it where normally we would just have `(f (x x))`. So what is this?
+
+Essentially this is our escape hatch. It's what stops the infinite loop of evaluation from being infinite.
+
+ <!-- @TODO: clean this explanation up -->
+
+(x x) return a function of one argument, so if we wanted to invoke it we would have something like ((x x) foo). we can abstract this with a lambda (fn [y] ((x x) y)) This is a function that takes one argument y and passes it to the function created by self application of x.
+
+The key difference is _when_ the function returned by (x x) is created. In the simple case it is calculated during the top level expression evaluation, whereas in the second case it is only created when the (fn [y]) lambda is invoked.
+
+instead of our expression evaluating to an infinite stack, it evaluated to a single iteration which has a function that creates the next iteration. but he important part it that it doesn't _have_ to create the next step.
+
+<!-- TODO: mention closures? -->
 
 --------
 # Part 3 - putting it all together
 
 ## Actually getting stuff done
 
-<!-- what does a real function f look like, let's do an example -->
+All of this is pretty difficult to think about in the abstract. Also we've been ignoring the function `f` this whole time. So let's look at an actual example `f` function and how we use it with the Y Combinator to solve a "real life" problem.
 
 ## the factorial step function
+
+<!-- @TODO: script this part onwards -->
 
 - takes a recur-fn (the next iteration)
 - returns a function which is a closure over the recur-fn
