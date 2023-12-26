@@ -110,11 +110,13 @@ To get started we're going to look at a delightful little function, one of my fa
 (fn [x] (x x))
 ```
 
+<!-- @TODO: Look at this, hold on, what? what goes in therE? not a number. not a basic function, gotta be a higher order function ... that takes itself??? What? What does that? -->
+
 So this is a lambda function, it's small and straightforward but has some interesting subtlety to it. It takes a parameter `x` and returns the result of calling `x` as a function, passing in `x` as its argument.
 
 So what can `x` be? We know we're going to call it, so `x` has to be a function, we also know that `x` takes a single argument, and that argument is itself. So `x` must be a function that takes a single function as its argument.
 
-Can anyone think of a function that takes a single function as it's argument? What about the self application function? It's a function and it takes a single argument `x`, which as we discussed must itself be a function.
+What goes in there? What about the self application function itself? It's a function that takes a function. What would that do?
 
 ### self application applied to itself
 
