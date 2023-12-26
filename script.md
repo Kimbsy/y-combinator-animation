@@ -9,7 +9,6 @@ Hi, I'm Dave, I'm a software engineer and amateur programming language designer.
 
 So today we're going to take a look at the Y Combinator. We'll look at what it is, what problem it solves, and hopefully we'll be able to develop some intuition as to how it works.
 
-
 ## Y Combinator intro
 
 What is the Y Combinator?
@@ -200,7 +199,8 @@ We then invoke the Y Combinator on our factorial function. The function that thi
 
 ## Outro
 
-- thanks, hopefully helpful
-- resources to look at
-- feel free to talk to me
-- questions?
+I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it a bit more approachable.
+
+I find it fundamentally delightful that the self application of self application, a concept which seems so abstract at first turns out the be the lynch pin of a surprisingly usable method of iteration.
+
+If this kind of stuff interests you I can recommend the following books
