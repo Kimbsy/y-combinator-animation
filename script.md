@@ -81,15 +81,13 @@ Pretty straightforward, we can create a variable called `foo` and give it a valu
 
 ### Lambda functions
 
-;; @TODO: fix plus-5 plus-five
-
 ``` Clojure
 (fn [param1 param2 ...] (stuff here))
 
 ;; define a +5 function
 (def plus-five (fn [n] (+ n 5)))
 
-(plus-5 foo)             ;; => 47
+(plus-five foo)          ;; => 47
 ((fn [n] (+ n 5)) foo)   ;; => 47
 ```
 
@@ -145,11 +143,32 @@ Here's another function which we'll call the wrapped self application function. 
 
 Ok, so with this function we have the ability to create an infinite stack of nested calls to some function `f`.
 
-<!-- @TODO: can we give an example of how we cold use an inifinte stakc of f's? -->
+<!-- @TODO: can we give an example of how we cold use an inifinte stack of f's? -->
+
+<!-- @TODO: we need an interesting mid review conclusion for these self application functions, maybe do an examination of our factorial-step `f` function? -->
 
 ## Ending the loop
 
-<!-- @TODO: describe how we'll end things?? -->
+<!-- @TODO: describe how we'll escape the iterations?? -->
+
+<!-- @TODO: I think we need another visual aide for this, can we show a nested tower of bubbles to represent the wrapped self application, and then a single bubble that can create a new nested bubble one at a time. -->
+
+If you squint a bit this is kinda like the wrapped self application function, we have the call to `f` wrapping the self application of `(x x)` it just has another nested lambda inside it where normally we would just have `(f (x x))`. So what is this?
+
+Essentially this is our escape hatch, we'll call it the delayed evaluation lambda. It's what stops the infinite loop of evaluation from being infinite.
+
+ <!-- @TODO: clean this explanation up, add slides -->
+
+(x x) return a function of one argument, so if we wanted to invoke it we would have something like ((x x) foo). we can abstract this with a lambda (fn [y] ((x x) y)) This is a function that takes one argument y and passes it to the function created by self application of x.
+
+these are equivalent in output, but the function returned by (x x) happens at different times
+((x x) foo)
+((fn [y] ((x x) y)) foo)
+
+The key difference is _when_ the function returned by (x x) is created. In the simple case it is calculated during the top level expression evaluation, whereas in the second case it is only created when the (fn [y]) lambda is invoked.
+
+instead of our expression evaluating to an infinite stack, it evaluates to a single iteration which has a function that creates the next iteration. but he important part it that it doesn't _have_ to create the next step.
+
 
 ## Back to the Y Combinator
 
@@ -161,19 +180,9 @@ It then calls this lambda function on this one.
 
 Look right here we have a function which takes an `x` and calls `x` with `x` as it's argument. The self application function!
 
-And what are we passing into the self application function? This thing.
+And what are we passing into the self application function? This thing, well that's just the wrapped self application function with the delayed evaluation lambda.
 
-If you squint a bit this is kinda like the wrapped self application function, we have the call to `f` wrapping the self application of `(x x)` it just has another nested lambda inside it where normally we would just have `(f (x x))`. So what is this?
-
-Essentially this is our escape hatch, we'll call it the delayed evaluation lambda. It's what stops the infinite loop of evaluation from being infinite.
-
- <!-- @TODO: clean this explanation up, add slides -->
-
-(x x) return a function of one argument, so if we wanted to invoke it we would have something like ((x x) foo). we can abstract this with a lambda (fn [y] ((x x) y)) This is a function that takes one argument y and passes it to the function created by self application of x.
-
-The key difference is _when_ the function returned by (x x) is created. In the simple case it is calculated during the top level expression evaluation, whereas in the second case it is only created when the (fn [y]) lambda is invoked.
-
-instead of our expression evaluating to an infinite stack, it evaluated to a single iteration which has a function that creates the next iteration. but he important part it that it doesn't _have_ to create the next step.
+So The Y Combinator takes an `f`, our iteration step function, and creates our dynamically extendable stack of nested calls.
 
 --------
 # Part 3 - putting it all together
@@ -184,6 +193,7 @@ All of this is pretty difficult to think about in the abstract. Also we've been 
 
 ## the factorial step function
 
+<!-- @TODO: maybe we should rename `recur-fn` to something like `next-f`? -->
 ``` Clojure
 (def factorial-step
   (fn [recur-fn]
@@ -201,7 +211,7 @@ Now `recur-fn` is our wrapped self application function with the delayed evaluat
 
 
 <!-- @TODO: this bit was crap we haven't understood the Y Combintor enough to just say `(Y factorial-step)` -->
-
+    
 We can finally invoke the Y Combinator on our `factorial-step` function. The function that this returns calculates the first step of the iteration and  contains a reference to a function that creates the next step (which contains a reference to the function that creates the _next_ step) etc. etc.
 
 When we invoke this self-building stack of functions passing in a number `n`, we will perform steps of the factorial algorithm until we reach the base case where `n` is `0`, that step will return the number `1`, which will get returned back up the stack to be multiplied by each other step until we finally return the factorial of our inital input `n`.
