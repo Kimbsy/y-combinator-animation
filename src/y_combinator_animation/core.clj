@@ -27,3 +27,10 @@
   "Run the game"
   [& args]
   (qp/run y-combinator-animation-game))
+
+
+(def f
+  (fn [next-f]
+    (if at-front?
+      1
+      (+ 1 (next-f)))))

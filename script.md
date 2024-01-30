@@ -136,14 +136,28 @@ Two questions naturally arise. Can we somehow inject work into each iteration of
 (fn [x] (f (x x)))
 ```
 
- <!-- @TODO: cut this way down -->
-Here's another function which we'll call the wrapped self application function. It's very similar to the standard self application function, but we have this extra call to some function `f` that encloses the self application bit. We don't need to know what `f` is at this point, but just assume it is a function that exists (pretty low bar).
+Here's another function very similar to the previous one, but we have this extra call to `f` in there. We don't need to know what `f` is at this point, but just assume it is a function that exists.
 
 - walk through how it evaluates to nested calls to f
 
 Ok, so with this function we have the ability to create an infinite stack of nested calls to some function `f`.
 
 <!-- @TODO: can we give an example of how we cold use an inifinte stack of f's? -->
+What kind of function wants to be called in a nested stack? A recursive one!
+
+How about an example?
+
+Say you are sat in a cinema some distance form the front, and you want to know what row you are in. You can ask the person in front of you what row they are in and add 1 to the response. The person in front of you can ask the person in front of them all the way to the front, when the person at the front is asked what row they are in it's obvious, so they reply "I'm in the first row". The next person says "I'm in the second row", all the way back to the person in front of you who says "I'm in the 22nd row" (I don't know how big cinemas are), therefore we are in the 23rd row.
+
+What does this look like as an `f` function?
+
+``` Clojure
+(def f
+  (fn [next-f]
+    (if at-front?
+      1
+      (+ 1 (next-f)))))
+```
 
 <!-- @TODO: we need an interesting mid review conclusion for these self application functions, maybe do an examination of our factorial-step `f` function? -->
 
@@ -157,7 +171,7 @@ If you squint a bit this is kinda like the wrapped self application function, we
 
 Essentially this is our escape hatch, we'll call it the delayed evaluation lambda. It's what stops the infinite loop of evaluation from being infinite.
 
- <!-- @TODO: clean this explanation up, add slides -->
+ <!-- @TODO: clean this VVVV explanation up, add slides -->
 
 (x x) return a function of one argument, so if we wanted to invoke it we would have something like ((x x) foo). we can abstract this with a lambda (fn [y] ((x x) y)) This is a function that takes one argument y and passes it to the function created by self application of x.
 
@@ -168,6 +182,8 @@ these are equivalent in output, but the function returned by (x x) happens at di
 The key difference is _when_ the function returned by (x x) is created. In the simple case it is calculated during the top level expression evaluation, whereas in the second case it is only created when the (fn [y]) lambda is invoked.
 
 instead of our expression evaluating to an infinite stack, it evaluates to a single iteration which has a function that creates the next iteration. but he important part it that it doesn't _have_ to create the next step.
+
+<!--             ^^^^             -->
 
 
 ## Back to the Y Combinator
@@ -195,12 +211,12 @@ All of this is pretty difficult to think about in the abstract. Also we've been 
 
 <!-- @TODO: maybe we should rename `recur-fn` to something like `next-f`? -->
 ``` Clojure
-(def factorial-step
-  (fn [recur-fn]
+(def f
+  (fn [next-f]
     (fn [n]
       (if (= n 0)
         1
-        (* n (recur-fn (- n 1)))))))
+        (* n (next-f (- n 1)))))))
 ```
 
 Ok so calculating the factorial of a number isn't super exciting, but it's a well understood problem that has a simple recursive solution. Perfect for our needs.
@@ -230,6 +246,6 @@ When we invoke this self-building stack of functions passing in a number `n`, we
 
 I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it a bit more approachable.
 
-I find it fundamentally delightful that the sel f application of self application, a concept which seems so abstract at first turns out the be the lynch pin of a surprisingly usable method of iteration.
+I find it fundamentally delightful that the self application of self application, a concept which seems so abstract at first turns out the be the lynch pin of a surprisingly usable method of iteration.
 
 If this kind of stuff interests you I can recommend the following books
