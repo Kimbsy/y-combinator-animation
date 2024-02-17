@@ -52,6 +52,8 @@ Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad
 
 ## How does it work?
 
+There's two steps to using the Y Combinator. First we invoke it passing in a non-recursive function `f`, and it will return to us a new function `f'` which is recursive. Then we can invoke `f'` with some actual arguments and use it to solve a recursive problem.
+
 So the Y Combinator somehow gives us recursion without using recursion. What kind of magic makes this possible? Turns out it's just good old fashioned functions, albeit some pretty abstract and difficult to think about functions.
 
 ## Clojure primer
@@ -98,15 +100,27 @@ We can give lambdas names with `def` and use them like variables, or we can use 
 --------
 # Part 2 - self application of self application
 
-Okay, so back to the Y Combinator. We wanted to look at some weird functions.
+Okay, so back to the Y Combinator, we see there are two parts to its usage, and we want to understand what is happening in both of them.
 
-To get started we're going to look at a delightful little function, one of my favourites, the self-application function.
+In order to do this we're going to start from the bottom up, beginning with, quite possibly, my favourite function. The self-application function, also known as the Mockingbird.
 
 ## self application function
 
 ``` Clojure
 (fn [x] (x x))
 ```
+
+So we know what this is, it's an anonymous function, it takes a single parameter `x` and it calls `x` passing `x` in as an argument.
+
+So what is `x`??? What are the allowable values?
+
+We know it's a function because we're calling it, and that it's argument is also a function (since it is its own argument).
+
+So we have a function that takes a single argument which is a function that takes a single argument which is a function that takes a single argument etc. etc.
+
+Ok so this isn't recursion per se, but it's structure should definitely make us think that there's a possibility of recursion cropping up at some point.
+
+The self-application function is  ;; :TODO: finish this
 
 <!-- @TODO: Look at this, hold on, what? what goes in therE? not a number. not a basic function, gotta be a higher order function ... that takes itself??? What? What does that? -->
 

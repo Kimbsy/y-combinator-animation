@@ -30,7 +30,7 @@ An understanding of functional programming is assumed. Experience with (or expos
 - what is the Y Combinator?
 - bad ways of approaching it
 - what is it used for?
-- @TODO: do we want a how here? show that we do a (def foo (Y f)), then (foo 5) = 120?
+- How is it used? show that we do a (def foo (Y f)), then (foo 5) = 120
 - Clojure primer
 
 ## Act 2
