@@ -118,17 +118,11 @@ We know it's a function because we're calling it, and that it's argument is also
 
 So we have a function that takes a single argument which is a function that takes a single argument which is a function that takes a single argument etc. etc.
 
-Ok so this isn't recursion per se, but it's structure should definitely make us think that there's a possibility of recursion cropping up at some point.
+Ok so this isn't actually recursion by itself, but this self-referential structure should definitely make us think that there's a possibility of recursion cropping up at some point.
 
-The self-application function is  ;; :TODO: finish this
+So what functions could we actually use here? I guess `identity`, that's a classic, pretty boring though.
 
-<!-- @TODO: Look at this, hold on, what? what goes in therE? not a number. not a basic function, gotta be a higher order function ... that takes itself??? What? What does that? -->
-
-So this is a lambda function, it's small and straightforward but has some interesting subtlety to it. It takes a parameter `x` and returns the result of calling `x` as a function, passing in `x` as its argument.
-
-So what can `x` be? We know we're going to call it, so `x` has to be a function, we also know that `x` takes a single argument, and that argument is itself. So `x` must be a function that takes a single function as its argument.
-
-What goes in there? What about the self application function itself? It's a function that takes a function. What would that do?
+What about the self application function? It's a function that takes a single function as an argument isn't it?
 
 ### self application applied to itself
 
@@ -142,7 +136,11 @@ We're not allowed to stop, this evaluation will keep going forever.
 
 This is a loop, it does nothing and we can't stop it, but it's still a loop.
 
-Two questions naturally arise. Can we somehow inject work into each iteration of this loop? And can we escape once enough work has been done?
+Two questions naturally arise. Can we get it to do something? And can we stop it?
+
+facts               questions
+- does nothing     - can we make it do something?
+- can't stop it    - can we stop it?
 
 ## wrapped self application function
 
@@ -156,7 +154,7 @@ Here's another function very similar to the previous one, but we have this extra
 
 Ok, so with this function we have the ability to create an infinite stack of nested calls to some function `f`.
 
-<!-- @TODO: can we give an example of how we cold use an inifinte stack of f's? -->
+<!-- @TODO: This example doesn't quite work, recursive functinos don't work like that -->
 What kind of function wants to be called in a nested stack? A recursive one!
 
 How about an example?
@@ -185,20 +183,7 @@ If you squint a bit this is kinda like the wrapped self application function, we
 
 Essentially this is our escape hatch, we'll call it the delayed evaluation lambda. It's what stops the infinite loop of evaluation from being infinite.
 
- <!-- @TODO: clean this VVVV explanation up, add slides -->
-
-(x x) return a function of one argument, so if we wanted to invoke it we would have something like ((x x) foo). we can abstract this with a lambda (fn [y] ((x x) y)) This is a function that takes one argument y and passes it to the function created by self application of x.
-
-these are equivalent in output, but the function returned by (x x) happens at different times
-((x x) foo)
-((fn [y] ((x x) y)) foo)
-
-The key difference is _when_ the function returned by (x x) is created. In the simple case it is calculated during the top level expression evaluation, whereas in the second case it is only created when the (fn [y]) lambda is invoked.
-
-instead of our expression evaluating to an infinite stack, it evaluates to a single iteration which has a function that creates the next iteration. but he important part it that it doesn't _have_ to create the next step.
-
-<!--             ^^^^             -->
-
+<!-- @TODO: explain how there are two steps, one where we use Y to create a stack of f's, then another when we invoke the stack of fs (the inner fns from the factorial-step example). -->
 
 ## Back to the Y Combinator
 

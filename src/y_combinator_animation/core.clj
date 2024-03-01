@@ -34,3 +34,9 @@
     (if at-front?
       1
       (+ 1 (next-f)))))
+
+(def c
+  [coll]
+  (if (= () coll)
+    0
+    (+ 1 (c (rest coll)))))
