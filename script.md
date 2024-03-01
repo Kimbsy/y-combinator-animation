@@ -34,6 +34,22 @@ So what do we do when the documentation goes over our head? That's right we dive
 
 Okayyy so I see some anonymous functions, lots of anonymous functions... lots of nested anonymous functions. This isn't exactly self-documenting code here :/
 
+So what do we do next? how about looking for an example usage that we can just copy paste?
+
+``` Clojure
+;; f = "factorial-ish"
+
+(Y f) => g
+
+(g 5) => 120
+```
+
+Well this is reasonably understandable, `Y` takes some function `f` and returns a new function `g` which can solve a recursive problem.
+
+That's not super impressive until you find out that `Y` works even in languages where you don't have recursion, or iteration of any kind. No mapping, reduing, filtering, nothing. Not even for loops.
+
+
+
 So the technical definition was a bit obtuse, and the implementation on it's own wasn't too much help. Let's try a different approach and break it down, starting from the bottom up.
 
 ## What is it used for?
@@ -239,12 +255,8 @@ When we invoke this self-building stack of functions passing in a number `n`, we
 
 ## Outro
 
-<!-- @TODO: better summation, talk about small but complex, building up hard to hold abstact concepts, ending with usable thing -->
+I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it approachable.
 
-<!-- @TODO: as they say in the forge, the tao that can be named is not the eternal tao, someone's description of enlightenment is not enlightenment. if this felt close to interesting, you sould have a play with it yourself, when it clicks its staggeringly beautiful -->
+For me the fact that we can implement recursion in an environment that doesn't have it says something really fundamental about recursion itself. It's almost like recursion already exists everywhere as some kind of universal truth and it just takes us shuffling some functions around in weird ways to reveal it.
 
-I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it a bit more approachable.
-
-I find it fundamentally delightful that the self application of self application, a concept which seems so abstract at first turns out the be the lynch pin of a surprisingly usable method of iteration.
-
-If this kind of stuff interests you I can recommend the following books
+If you're after some loosely related further reading I can recommend these books, each of which go over some aspect of what we've talked about today.

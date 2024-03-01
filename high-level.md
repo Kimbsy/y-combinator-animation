@@ -28,9 +28,10 @@ An understanding of functional programming is assumed. Experience with (or expos
 
 - who am I?
 - what is the Y Combinator?
-- bad ways of approaching it
-- what is it used for?
-- How is it used? show that we do a (def foo (Y f)), then (foo 5) = 120
+- definition
+- source code
+- example usage
+- derive what it is used for
 - Clojure primer
 
 ## Act 2
