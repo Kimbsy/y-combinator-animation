@@ -35,8 +35,25 @@
       1
       (+ 1 (next-f)))))
 
-(def c
-  [coll]
-  (if (= () coll)
-    0
-    (+ 1 (c (rest coll)))))
+
+
+(def count
+  (fn [next-fn]
+    (fn [coll]
+      (if (= () coll)
+        0
+        (+ 1 (next-fn (rest coll)))))))
+
+
+(def fact
+  (fn [n]
+    (if (= 0 n)
+      1
+      (* n (fact (- n 1))))))
+
+(def fact
+  (fn [recur-fn]
+    (fn [n]
+      (if (= 0 n)
+        1
+        (* n (recur-fn (- n 1)))))))

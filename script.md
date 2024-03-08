@@ -17,7 +17,7 @@ Let's start by taking a look at the definition of the Y Combinator, a pretty sen
 
 > A method for achieving unbounded recursion through fixed-point combinatorial instantiation of self-applicative lambda abstractions
 
-Okayyy I mean that's pretty thorough, and we've got to presume technically correct. But it's not terribly enlightening.
+So I mean that's pretty thorough, and we've got to presume technically correct. But it's not terribly enlightening.
 
 So what do we do when the documentation goes over our head? That's right we dive blindly into the source code in the hopes that it will all start making sense. So let's look at an implementation of the Y Combinator in Clojure.
 
@@ -32,7 +32,7 @@ So what do we do when the documentation goes over our head? That's right we dive
             ((x x) y)))))))
 ```
 
-Okayyy so I see some anonymous functions, lots of anonymous functions... lots of nested anonymous functions. This isn't exactly self-documenting code here :/
+Wow. Okay. So I see some anonymous functions, lots of nested anonymous functions. This isn't exactly self-documenting code here :/
 
 So what do we do next? how about looking for an example usage that we can just copy paste?
 
@@ -44,21 +44,17 @@ So what do we do next? how about looking for an example usage that we can just c
 (g 5) => 120
 ```
 
-Well this is reasonably understandable, `Y` takes some function `f` and returns a new function `g` which can solve a recursive problem.
+Well this is reasonably understandable, there's some function f which is factorialish, `Y` takes this function `f` and returns a new function `g` which can solve a recursive problem.
 
-That's not super impressive until you find out that `Y` works even in languages where you don't have recursion, or iteration of any kind. No mapping, reduing, filtering, nothing. Not even for loops.
+That might not be super impressive until you find out that `Y` works even in languages where you don't have recursion, or iteration of any kind. No mapping, reducing, filtering, nothing. Not even for loops.
 
-
-
-So the technical definition was a bit obtuse, and the implementation on it's own wasn't too much help. Let's try a different approach and break it down, starting from the bottom up.
-
-## What is it used for?
+So that's what it's for:
 
 > Doing recursion in languages that don’t have recursion.
 
-When does that happen? What languages don't have recursion? Or, I don't know, other lesser forms of iterating. There's mapping, filtering, reduction, transduction... I dunno, for loops?
+When does that happen? What languages don't have recursion? 
 
-Well maybe you're a Mathematician working in the Lambda Calculus then you don't have access to any of these. <CLICK> How often does one do meaningful work in an abstract computational calculus? Arguably not every day.
+Well maybe you're a Mathematician working in the Lambda Calculus. <CLICK> How often does one do meaningful work in an abstract computational calculus? Arguably not every day.
 
 Maybe you're writing your own language, and you're trying to do so in a purely functional way with only immutable values <CLICK>.
 
@@ -66,15 +62,14 @@ Maybe you're writing your own language, and you're trying to do so in a purely f
 
 Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad set of circumstances... 
 
-## How does it work?
 
-There's two steps to using the Y Combinator. First we invoke it passing in a non-recursive function `f`, and it will return to us a new function `f'` which is recursive. Then we can invoke `f'` with some actual arguments and use it to solve a recursive problem.
+<!-- @TODO: maybe something about beauty or elegance as a reason for doing this??? give grumpy techincal people reason to care -->
 
-So the Y Combinator somehow gives us recursion without using recursion. What kind of magic makes this possible? Turns out it's just good old fashioned functions, albeit some pretty abstract and difficult to think about functions.
+^^^^^ GOOD ^^^^^^
 
 ## Clojure primer
 
-So there's a chance that some of you haven't used Clojure before (see me afterwards, I'll get you hooked up). Here's what you need to know to follow along.
+So there's a chance that some of you haven't used Clojure before (see me afterwards, I'll get you hooked up). Dont' worry, Here's what you need to know to follow along.
 
 ### Call a function
 
@@ -113,12 +108,22 @@ Anonymous functions have a pretty straightforward syntax. We start with `fn`, th
 
 We can give lambdas names with `def` and use them like variables, or we can use the lambda expression directly in place of a function name.
 
+
+<!-- @TODO: maybe write out the function as we describe it in animations maybe? maybe not? work on this -->
+
+
+^^^ FINE, COULD USE FINESSING ^^^^^
+
 --------
-# Part 2 - self application of self application
+# part 2 - self application of self application
 
-Okay, so back to the Y Combinator, we see there are two parts to its usage, and we want to understand what is happening in both of them.
+So here we are back at the Y Combinator, let's take a look at it's structure.
 
-In order to do this we're going to start from the bottom up, beginning with, quite possibly, my favourite function. The self-application function, also known as the Mockingbird.
+We're defining a function Y which takes a function `f` as it's argument.
+
+It then calls this lambda function on this one.
+
+Let's take a look at that first lambda, which is quite possibly my favourite function. The self-application function. Sometimes also known as the Mockingbird.
 
 ## self application function
 
@@ -126,7 +131,7 @@ In order to do this we're going to start from the bottom up, beginning with, qui
 (fn [x] (x x))
 ```
 
-So we know what this is, it's an anonymous function, it takes a single parameter `x` and it calls `x` passing `x` in as an argument.
+So we can do this, it's an anonymous function, it has a single parameter `x` and it calls `x` passing `x` in as an argument.
 
 So what is `x`??? What are the allowable values?
 
@@ -138,13 +143,11 @@ Ok so this isn't actually recursion by itself, but this self-referential structu
 
 So what functions could we actually use here? I guess `identity`, that's a classic, pretty boring though.
 
-What about the self application function? It's a function that takes a single function as an argument isn't it?
+What about the self application function itself? It's a function that takes a single function as an argument? What would that do? What would it look like?
 
 ### self application applied to itself
 
-So we're considering the idea that we could pass the self application function to the self application function. What would that do? What would it look like?
-
-- walk through how it evaluates to itself.
+> DEMO or video, walk through how it evaluates to itself.
 
 So what we end up with is another expression, the same expression. Now the rules of Lisp evaluation say that we can't juts stop evaluating, we need to evaluate this new expression too. Of course this will just get us back to where we started again.
 
@@ -170,22 +173,59 @@ Here's another function very similar to the previous one, but we have this extra
 
 Ok, so with this function we have the ability to create an infinite stack of nested calls to some function `f`.
 
+
+
+
+
+
+
+VVVVVV BAD VVVVVVV
+
+
 <!-- @TODO: This example doesn't quite work, recursive functinos don't work like that -->
 What kind of function wants to be called in a nested stack? A recursive one!
 
-How about an example?
 
-Say you are sat in a cinema some distance form the front, and you want to know what row you are in. You can ask the person in front of you what row they are in and add 1 to the response. The person in front of you can ask the person in front of them all the way to the front, when the person at the front is asked what row they are in it's obvious, so they reply "I'm in the first row". The next person says "I'm in the second row", all the way back to the person in front of you who says "I'm in the 22nd row" (I don't know how big cinemas are), therefore we are in the 23rd row.
+<!-- How about an example? -->
 
-What does this look like as an `f` function?
+<!-- Say you are sat in a cinema some distance form the front, and you want to know what row you are in. You can ask the person in front of you what row they are in and add 1 to the response. The person in front of you can ask the person in front of them all the way to the front, when the person at the front is asked what row they are in it's obvious, so they reply "I'm in the eroth row". The next person says "I'm in the first row", all the way back to the person in front of you who says "I'm in the 22nd row" (I don't know how big cinemas are), therefore we are in the 23rd row. -->
+
+<!-- What does this look like as an `f` function? -->
 
 ``` Clojure
-(def f
-  (fn [next-f]
-    (if at-front?
+ (def f 
+   (fn [next-f]
+     (if at-front?
+       0
+       (+ 1 (next-f)))))
+ ```
+
+
+
+
+
+
+;; @TODO: maybe use the normal fact function compared to the Y combinator fact function?
+
+(def fact
+  (fn [n]
+    (if (= 0 n)
       1
-      (+ 1 (next-f)))))
-```
+      (* n (fact (- n 1))))))
+
+(def fact
+  (fn [recur-fn]
+    (fn [n]
+      (if (= 0 n)
+        1
+        (* n (recur-fn (- n 1)))))))
+
+
+
+
+
+
+
 
 <!-- @TODO: we need an interesting mid review conclusion for these self application functions, maybe do an examination of our factorial-step `f` function? -->
 
@@ -195,25 +235,9 @@ What does this look like as an `f` function?
 
 <!-- @TODO: I think we need another visual aide for this, can we show a nested tower of bubbles to represent the wrapped self application, and then a single bubble that can create a new nested bubble one at a time. -->
 
-If you squint a bit this is kinda like the wrapped self application function, we have the call to `f` wrapping the self application of `(x x)` it just has another nested lambda inside it where normally we would just have `(f (x x))`. So what is this?
-
-Essentially this is our escape hatch, we'll call it the delayed evaluation lambda. It's what stops the infinite loop of evaluation from being infinite.
-
 <!-- @TODO: explain how there are two steps, one where we use Y to create a stack of f's, then another when we invoke the stack of fs (the inner fns from the factorial-step example). -->
 
-## Back to the Y Combinator
-
-Let's look back at the source code for the Y Combinator now that we're a bit more familiar with some of it's pieces.
-
-The Y Combinator is a function which takes an `f`.
-
-It then calls this lambda function on this one.
-
-Look right here we have a function which takes an `x` and calls `x` with `x` as it's argument. The self application function!
-
-And what are we passing into the self application function? This thing, well that's just the wrapped self application function with the delayed evaluation lambda.
-
-So The Y Combinator takes an `f`, our iteration step function, and creates our dynamically extendable stack of nested calls.
+So The Y Combinator takes an `f`, our iteration step function, and creates a dynamically extending stack of nested calls.
 
 --------
 # Part 3 - putting it all together
@@ -254,6 +278,15 @@ When we invoke this self-building stack of functions passing in a number `n`, we
 ```
 
 ## Outro
+
+;; @TODO: this need slides, they're impactful statements, maybe conclusion???
+
+;; @TODO funny meme? though honestly maybe not
+
+- IF I HAD ONE
+- butterfly, is this ... recursion?
+- distracted boyfriend?
+- we have recursion at home
 
 I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it approachable.
 
