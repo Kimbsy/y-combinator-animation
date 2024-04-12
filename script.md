@@ -65,7 +65,11 @@ Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad
 
 <!-- @TODO: maybe something about beauty or elegance as a reason for doing this??? give grumpy techincal people reason to care -->
 
-^^^^^ GOOD ^^^^^^
+
+
+^^^^^^^^^^^^^ GOOD ^^^^^^^^^^^^^^
+
+
 
 ## Clojure primer
 
@@ -112,7 +116,14 @@ We can give lambdas names with `def` and use them like variables, or we can use 
 <!-- @TODO: maybe write out the function as we describe it in animations maybe? maybe not? work on this -->
 
 
-^^^ FINE, COULD USE FINESSING ^^^^^
+^^^^^^ PRIMER IS FINE, COULD USE FINESSING ^^^^^
+
+
+
+
+
+
+
 
 --------
 # part 2 - self application of self application
@@ -123,7 +134,7 @@ We're defining a function Y which takes a function `f` as it's argument.
 
 It then calls this lambda function on this one.
 
-Let's take a look at that first lambda, which is quite possibly my favourite function. The self-application function. Sometimes also known as the Mockingbird.
+Let's take a look at that first lambda, which we'll call the self-application function.
 
 ## self application function
 
@@ -131,7 +142,7 @@ Let's take a look at that first lambda, which is quite possibly my favourite fun
 (fn [x] (x x))
 ```
 
-So we can do this, it's an anonymous function, it has a single parameter `x` and it calls `x` passing `x` in as an argument.
+So this seems pretty straightforward, it's an anonymous function, it has a single parameter `x` and it calls `x` passing `x` in as an argument.
 
 So what is `x`??? What are the allowable values?
 
@@ -149,11 +160,9 @@ What about the self application function itself? It's a function that takes a si
 
 > DEMO or video, walk through how it evaluates to itself.
 
-So what we end up with is another expression, the same expression. Now the rules of Lisp evaluation say that we can't juts stop evaluating, we need to evaluate this new expression too. Of course this will just get us back to where we started again.
+So what we end up with is another expression, the same expression. Now the rules of Lisp evaluation say that we can't juts stop evaluating, we need to evaluate this new expression too, but if we do that we end up in exactly the same position. We're not allowed to stop, this evaluation will keep going forever.
 
-We're not allowed to stop, this evaluation will keep going forever.
-
-This is a loop, it does nothing and we can't stop it, but it's still a loop.
+So what we have here is a loop, it does nothing and we can't stop it, but it's still a loop.
 
 Two questions naturally arise. Can we get it to do something? And can we stop it?
 
@@ -167,13 +176,21 @@ facts               questions
 (fn [x] (f (x x)))
 ```
 
-Here's another function very similar to the previous one, but we have this extra call to `f` in there. We don't need to know what `f` is at this point, but just assume it is a function that exists.
+In order to start answering those questions we're going to jump back to the Y combinator and look at our second lambda here.
+
+Now this is a little more complex than we need it to be for now, so we're going to look at a simpler version first and we'll come back to this one after.
+
+This function is very similar to the previous self-application function, but we have this extra call to `f` in there. We don't need to know what `f` is at this point, but just assume it is a function that exists.
 
 - walk through how it evaluates to nested calls to f
 
 Ok, so with this function we have the ability to create an infinite stack of nested calls to some function `f`.
 
+In essence we've managed to inject some work into each iteration of the infinite evaluation loop. Nice! Our infinite evaluation loop can now perform some kind of work.
 
+
+
+^^^^^^ PRETTY GOOD, NEED TO GET FEEDBACK ^^^^^
 
 
 
@@ -239,6 +256,15 @@ What kind of function wants to be called in a nested stack? A recursive one!
 
 So The Y Combinator takes an `f`, our iteration step function, and creates a dynamically extending stack of nested calls.
 
+
+
+
+
+
+
+
+
+
 --------
 # Part 3 - putting it all together
 
@@ -290,6 +316,15 @@ When we invoke this self-building stack of functions passing in a number `n`, we
 
 I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it approachable.
 
+What have we covered?
+
+- self application
+- infinite evaluation loops
+- delayed evaluation
+- non-recursive recursive functions
+
 For me the fact that we can implement recursion in an environment that doesn't have it says something really fundamental about recursion itself. It's almost like recursion already exists everywhere as some kind of universal truth and it just takes us shuffling some functions around in weird ways to reveal it.
+
+<alt> Recursion exists as a fundamental universal truth, you need only the heart to find it
 
 If you're after some loosely related further reading I can recommend these books, each of which go over some aspect of what we've talked about today.

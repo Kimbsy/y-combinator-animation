@@ -31,21 +31,25 @@ An understanding of functional programming is assumed. Experience with (or expos
 - definition
 - source code
 - example usage
-- derive what it is used for
+- what it is used for
 - Clojure primer
 
 ## Act 2
 
-- self application^2 <animation>
-- wrapped self-application^2 <animation>
-- what is f?
+- back to Y combiantor
+- self application^2
+- <animation>
+- back to Y combinator
+- wrapped self-application^2
+- <animation>
+- delayed evaluation lambda? explain how there are two steps, one where we use Y to create a stack of f's, then another when we invoke the stack of fs (the inner fns from the factorial-step example).
+
 
 ## Act 3
 
-- look at Y again, break it down
-
-- delayed evaluation lambda, explain how there are two steps, one where we use Y to create a stack of f's, then another when we invoke the stack of fs (the inner fns from the factorial-step example).
-
-- use Y to create f chain <animation>?
-- use f chain to solve problems <animation>?
+- use Y to create f chain
+- <animation>?
+- what is f?
+- use f chain to solve problems
+- <animation>?
 - outro, reading
