@@ -150,7 +150,7 @@ We know it's a function because we're calling it, and that it's argument is also
 
 So we have a function that takes a single argument which is a function that takes a single argument which is a function that takes a single argument etc. etc.
 
-Ok so this isn't actually recursion by itself, but this self-referential structure should definitely make us think that there's a possibility of recursion cropping up at some point.
+Ok so this isn't actually recursion by itself, but this psuedo-self-referential structure should definitely make us think that there's a possibility of recursion cropping up at some point.
 
 So what functions could we actually use here? I guess `identity`, that's a classic, pretty boring though.
 
@@ -195,47 +195,57 @@ In essence we've managed to inject some work into each iteration of the infinite
 
 
 
+## delayed evaluation lambda
 
-VVVVVV BAD VVVVVVV
+So can we stop it? yep.
 
-
-<!-- @TODO: This example doesn't quite work, recursive functinos don't work like that -->
-What kind of function wants to be called in a nested stack? A recursive one!
-
-
-<!-- How about an example? -->
-
-<!-- Say you are sat in a cinema some distance form the front, and you want to know what row you are in. You can ask the person in front of you what row they are in and add 1 to the response. The person in front of you can ask the person in front of them all the way to the front, when the person at the front is asked what row they are in it's obvious, so they reply "I'm in the eroth row". The next person says "I'm in the first row", all the way back to the person in front of you who says "I'm in the 22nd row" (I don't know how big cinemas are), therefore we are in the 23rd row. -->
-
-<!-- What does this look like as an `f` function? -->
+Let's look at that more complicated version of the nested f function again.
 
 ``` Clojure
- (def f 
-   (fn [next-f]
-     (if at-front?
-       0
-       (+ 1 (next-f)))))
- ```
+(fn [x]
+  (f (fn [y]
+       ((x x) y))))
+```
+
+So what happens if we apply this function to itself? It will invoke `f` applied to this internal lambda which is ready to apply the `x` to the `x`, but crucially, hasn't done it yet.
+
+So `f` is going to be passed a function, which if it decides to invoke it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f`. Each layer has the ability to create the next layer if it wants to.
 
 
+## what the f?
+
+So with that in hand we can start to think about what the `f` this function actually is.
+
+``` Clojure
+(def f
+  (fn [internal-lambda]
+    (if condition?
+      (internal-lambda)
+      "just return some value")))
+```
+
+So this function takes that internal lambda as an argument, and if some condition is met it can choose to invoke that lambda which will invoke `f` again, giving it the same choice.
+
+Now this is close, but it's not quite what we want, we want to solve recursive problems, so we will have some input value that we want to pass in somewhere.  We want our `condition?` function to be checking our input value, and we want the input value to change each iteration so the condition eventually flips and we return a value instead of going a level deeper.
+
+<!-- ;; @TODO: carry on with this bit. -->
+Let's look at a real life problem that we can solve recursively, counting. Specifically counting the number of elements in a collection.
 
 
-
-
-;; @TODO: maybe use the normal fact function compared to the Y combinator fact function?
-
-(def fact
-  (fn [n]
-    (if (= 0 n)
-      1
-      (* n (fact (- n 1))))))
-
-(def fact
+``` Clojure
+(def count-step
   (fn [recur-fn]
-    (fn [n]
-      (if (= 0 n)
-        1
-        (* n (recur-fn (- n 1)))))))
+    (fn [coll]
+      (if (empty? coll)
+        0
+        (+ 1 (recur-fn (rest coll)))))))
+```
+
+
+
+
+
+<!-- ;; @TODO: now we have an f and an nuderstanding of the delayed evaluation building the stack dynamically we should demo it with an animation counting a collection. -->
 
 
 
@@ -244,19 +254,8 @@ What kind of function wants to be called in a nested stack? A recursive one!
 
 
 
-<!-- @TODO: we need an interesting mid review conclusion for these self application functions, maybe do an examination of our factorial-step `f` function? -->
 
-## Ending the loop
-
-<!-- @TODO: describe how we'll escape the iterations?? -->
-
-<!-- @TODO: I think we need another visual aide for this, can we show a nested tower of bubbles to represent the wrapped self application, and then a single bubble that can create a new nested bubble one at a time. -->
-
-<!-- @TODO: explain how there are two steps, one where we use Y to create a stack of f's, then another when we invoke the stack of fs (the inner fns from the factorial-step example). -->
-
-So The Y Combinator takes an `f`, our iteration step function, and creates a dynamically extending stack of nested calls.
-
-
+VVVVVV BAD VVVVVVV
 
 
 
@@ -268,40 +267,25 @@ So The Y Combinator takes an `f`, our iteration step function, and creates a dyn
 --------
 # Part 3 - putting it all together
 
-## Actually getting stuff done
+<!-- ;; @TODO: double check if this is redundant or less clear then previous -->
 
-All of this is pretty difficult to think about in the abstract. Also we've been ignoring the function `f` this whole time. So let's look at an actual example `f` function and how we use it with the Y Combinator to solve a "real life" problem.
-
-## the factorial step function
-
-<!-- @TODO: maybe we should rename `recur-fn` to something like `next-f`? -->
-``` Clojure
-(def f
-  (fn [next-f]
-    (fn [n]
-      (if (= n 0)
-        1
-        (* n (next-f (- n 1)))))))
-```
-
-Ok so calculating the factorial of a number isn't super exciting, but it's a well understood problem that has a simple recursive solution. Perfect for our needs.
-
-So this function `factorial-step` is going to be our `f`. It's a function that takes a single argument `recur-fn` and returns a function that computes the current step of the iteration. If we reach a base state we can return a value, otherwise we can recurse a level deeper by calling `recur-fn`.
-
-Now `recur-fn` is our wrapped self application function with the delayed evaluation lambda that we discussed, if we don't invoke it then the stack of nested calls to `f` can finally return a value, if we do invoke it we create an additional nested call to `f` and try again.
-
-
-<!-- @TODO: this bit was crap we haven't understood the Y Combintor enough to just say `(Y factorial-step)` -->
-    
-We can finally invoke the Y Combinator on our `factorial-step` function. The function that this returns calculates the first step of the iteration and  contains a reference to a function that creates the next step (which contains a reference to the function that creates the _next_ step) etc. etc.
+We can finally invoke the Y Combinator on our `count-step` function. The function that this returns calculates the first step of the iteration and contains a reference to a function that creates the next step (which contains a reference to the function that creates the _next_ step) etc. etc.
 
 When we invoke this self-building stack of functions passing in a number `n`, we will perform steps of the factorial algorithm until we reach the base case where `n` is `0`, that step will return the number `1`, which will get returned back up the stack to be multiplied by each other step until we finally return the factorial of our inital input `n`.
 
 ``` Clojure
-(def factorial (Y factorial-step))
+(def count (Y count-step))
 
-(factorial 5)     ;; => 120
+(count [0 0 0])     ;; => 3
 ```
+
+
+
+
+
+
+
+
 
 ## Outro
 

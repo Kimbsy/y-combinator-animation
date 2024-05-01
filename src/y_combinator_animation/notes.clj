@@ -145,3 +145,39 @@
 
 
 ;;
+
+
+
+
+
+
+
+(fn [x]
+  (f (fn [y]
+       ((x x) y))))
+
+(def internal-lambda
+  (fn [y]
+    ((x x) y)))
+
+(def f
+  (fn [internal-lambda]
+    (if condition?
+      (internal-lambda)
+      "just return some value")))
+
+(def f
+  (fn [internal-lambda]
+    (fn [ARG]
+      (if condition?
+        (internal-lambda <PASS IN ARG>) ; hence the y passed to (x x)
+        "just return some value"))))
+
+
+
+(def count
+  (fn [recur-fn]
+    (fn [coll]
+      (if (empty? coll)
+        0
+        (+ 1 (recur-fn (rest coll)))))))
