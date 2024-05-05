@@ -20,11 +20,7 @@ This talk should appeal to people who:
 An understanding of functional programming is assumed. Experience with (or expose to) Clojure or other Lisps is helpful, but not required.
 
 
-
-
-
-
-## Act 1
+## Part 1 - intro and primer
 
 - who am I?
 - what is the Y Combinator?
@@ -34,7 +30,7 @@ An understanding of functional programming is assumed. Experience with (or expos
 - what it is used for
 - Clojure primer
 
-## Act 2
+## part 2 - self application of self application
 
 - back to Y combiantor
 - self application^2
@@ -42,14 +38,24 @@ An understanding of functional programming is assumed. Experience with (or expos
 - back to Y combinator
 - wrapped self-application^2
 - <animation>
-- delayed evaluation lambda? explain how there are two steps, one where we use Y to create a stack of f's, then another when we invoke the stack of fs (the inner fns from the factorial-step example).
 
+## Part 3 - final pieces
 
-## Act 3
-
-- use Y to create f chain
-- <animation>?
+- delayed evaluation lambda
+- <animation>
 - what is f?
 - use f chain to solve problems
 - <animation>?
 - outro, reading
+
+
+# TODO:
+
+- make demo for simple dynamic chain
+- make demo for final `count` example
+- make slides for delayed eval
+- make slides for what the f
+- make slides for final example
+- make slides for outro
+- practice, time it
+- start cutting it down to 20 minutes

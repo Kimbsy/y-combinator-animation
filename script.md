@@ -158,7 +158,7 @@ What about the self application function itself? It's a function that takes a si
 
 ### self application applied to itself
 
-> DEMO or video, walk through how it evaluates to itself.
+> DEMO or video, walk through how it evaluates to itself
 
 So what we end up with is another expression, the same expression. Now the rules of Lisp evaluation say that we can't juts stop evaluating, we need to evaluate this new expression too, but if we do that we end up in exactly the same position. We're not allowed to stop, this evaluation will keep going forever.
 
@@ -182,7 +182,7 @@ Now this is a little more complex than we need it to be for now, so we're going 
 
 This function is very similar to the previous self-application function, but we have this extra call to `f` in there. We don't need to know what `f` is at this point, but just assume it is a function that exists.
 
-- walk through how it evaluates to nested calls to f
+> DEMO or video, walk through how it evaluates to nested calls to f
 
 Ok, so with this function we have the ability to create an infinite stack of nested calls to some function `f`.
 
@@ -193,9 +193,12 @@ In essence we've managed to inject some work into each iteration of the infinite
 ^^^^^^ PRETTY GOOD, NEED TO GET FEEDBACK ^^^^^
 
 
-
+--------
+# Part 3 - final pieces
 
 ## delayed evaluation lambda
+
+<!-- ;; @TODO: need to do slides for this -->
 
 So can we stop it? yep.
 
@@ -207,10 +210,12 @@ Let's look at that more complicated version of the nested f function again.
        ((x x) y))))
 ```
 
-So what happens if we apply this function to itself? It will invoke `f` applied to this internal lambda which is ready to apply the `x` to the `x`, but crucially, hasn't done it yet.
+So what happens if we apply this function to itself? It will invoke `f` applied to this internal lambda, and this lambda is ready to apply the `x` to the `x`, but crucially, hasn't done it yet.
 
-So `f` is going to be passed a function, which if it decides to invoke it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f`. Each layer has the ability to create the next layer if it wants to.
+So `f` is going to be passed this lambda, and if it decides to invoke it it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f` which can make the same choice. Each layer has the ability to create the next layer if it wants to.
 
+<!-- ;; @TODO: make this -->
+> DEMO or video, high level simulation of creating a chain of bubbles which dynamically decide whether to extend the chain
 
 ## what the f?
 
@@ -224,11 +229,11 @@ So with that in hand we can start to think about what the `f` this function actu
       "just return some value")))
 ```
 
-So this function takes that internal lambda as an argument, and if some condition is met it can choose to invoke that lambda which will invoke `f` again, giving it the same choice.
+Here's a function which takes that internal lambda as an argument, and if some condition is met it can choose to invoke that lambda which will invoke `f` again, giving it the same choice. Alternatively it can just return a value and stop the evaluation loop.
 
-Now this is close, but it's not quite what we want, we want to solve recursive problems, so we will have some input value that we want to pass in somewhere.  We want our `condition?` function to be checking our input value, and we want the input value to change each iteration so the condition eventually flips and we return a value instead of going a level deeper.
+Now this is close, but it's not quite what we want, we want to solve recursive problems, so we will have some input value that we want to pass in somewhere.  We want our `condition?` function to be checking our input value, and we want the input value to change each iteration so the condition eventually flips and we return a value instead of always going a level deeper.
 
-<!-- ;; @TODO: carry on with this bit. -->
+<!-- ;; @TODO: need to describe this counting function, talk about how we're injecting the args, e.g. how our recur-fn takes an argument -->
 Let's look at a real life problem that we can solve recursively, counting. Specifically counting the number of elements in a collection.
 
 
@@ -241,43 +246,23 @@ Let's look at a real life problem that we can solve recursively, counting. Speci
         (+ 1 (recur-fn (rest coll)))))))
 ```
 
+<!-- ;; @TODO: make this -->
+> DEMO or video, go through actual example where we have a coll
 
-
-
-
-<!-- ;; @TODO: now we have an f and an nuderstanding of the delayed evaluation building the stack dynamically we should demo it with an animation counting a collection. -->
-
-
-
-
-
-
-
-
-
-VVVVVV BAD VVVVVVV
-
-
-
-
-
-
-
-
---------
-# Part 3 - putting it all together
-
-<!-- ;; @TODO: double check if this is redundant or less clear then previous -->
-
-We can finally invoke the Y Combinator on our `count-step` function. The function that this returns calculates the first step of the iteration and contains a reference to a function that creates the next step (which contains a reference to the function that creates the _next_ step) etc. etc.
-
-When we invoke this self-building stack of functions passing in a number `n`, we will perform steps of the factorial algorithm until we reach the base case where `n` is `0`, that step will return the number `1`, which will get returned back up the stack to be multiplied by each other step until we finally return the factorial of our inital input `n`.
+Okay, we're ready to do this.
 
 ``` Clojure
 (def count (Y count-step))
 
 (count [0 0 0])     ;; => 3
 ```
+
+We can invoke the Y Combinator on our `count-step` function. The function that this returns contains a reference to a function that creates the next step (which contains a reference to the function that creates the _next_ step) etc. etc.
+
+When we invoke this self-building stack of functions passing in a collection `coll`, we will invoke our `recur-fn`, passing in a smaller collection each time until we reach the base case where `coll` is empty. That iteration will return the number `0`, which will get returned back up the stack to be incremented by each other step until we finally return the count of elements in our original collection `coll`.
+
+
+
 
 
 
@@ -289,14 +274,7 @@ When we invoke this self-building stack of functions passing in a number `n`, we
 
 ## Outro
 
-;; @TODO: this need slides, they're impactful statements, maybe conclusion???
-
-;; @TODO funny meme? though honestly maybe not
-
-- IF I HAD ONE
-- butterfly, is this ... recursion?
-- distracted boyfriend?
-- we have recursion at home
+<!-- ;; @TODO: this need slides, they're impactful statements, maybe conclusion??? -->
 
 I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it approachable.
 
