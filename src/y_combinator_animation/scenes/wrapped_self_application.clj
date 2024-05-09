@@ -20,14 +20,9 @@
 (declare init)
 
 (def text-size (* 2 qpu/default-text-size))
-(def green [178 255 99 255])
-(def blue [84 120 193 195])
-(def orange [245 143 41 255])
-(def white [230 230 230 255])
 
 ;; magic variable for pleasant vertical line spacing
 (def dy 1.3)
-
 
 (defn calc-center-pos
   [pos content size]
@@ -117,7 +112,7 @@
   (concat
    (init-chars (content-pos)
                content
-               white
+               common/white
                text-size
                qpu/default-font)
 
@@ -127,7 +122,7 @@
       (assoc s :sprite-group :duplicate))
     (init-chars (content-pos)
                 content
-                white
+                common/white
                 text-size
                 qpu/default-font))
    ;; reference
@@ -135,7 +130,7 @@
                    (assoc s :sprite-group :reference))
                  (init-chars (ref-pos)
                              "                  "
-                             green
+                             common/green
                              text-size
                              qpu/default-font))
          p7 (:pos (nth rs 7))]
@@ -214,7 +209,7 @@
                                       ((set (range 20 38)) cx))
                                  (= :reference (:sprite-group s)))
                            (-> s
-                               (assoc :color green)
+                               (assoc :color common/green)
                                add-hide-tween)
                            s))
                        sprites))))
@@ -342,19 +337,19 @@
                                                (qptween/add-tween
                                                 (qptween/tween
                                                  :color
-                                                 (- (nth green 0) r)
+                                                 (- (nth common/green 0) r)
                                                  :update-fn (fn [c d] (update c 0 + d))
                                                  :step-count 30))
                                                (qptween/add-tween
                                                 (qptween/tween
                                                  :color
-                                                 (- (nth green 1) g)
+                                                 (- (nth common/green 1) g)
                                                  :update-fn (fn [c d] (update c 1 + d))
                                                  :step-count 30))
                                                (qptween/add-tween
                                                 (qptween/tween
                                                  :color
-                                                 (- (nth green 2) b)
+                                                 (- (nth common/green 2) b)
                                                  :update-fn (fn [c d] (update c 2 + d))
                                                  :step-count 30)))
                              (or (< cx 9)
@@ -465,7 +460,7 @@
                              (if (and (not (#{:duplicate :reference} (:sprite-group s)))
                                       (#{13 15} cx))
                                (-> s
-                                   (assoc :color green)
+                                   (assoc :color common/green)
                                    add-hide-tween)
                                s))
                            sprites)))
@@ -491,7 +486,7 @@
                                      (-> (hidable-text-sprite
                                           (str c)
                                           p10
-                                          green
+                                          common/green
                                           qpu/default-font
                                           text-size)
                                          (assoc :init-coords [cx 0])
@@ -502,7 +497,7 @@
                                      (-> (hidable-text-sprite
                                           (str c)
                                           p29
-                                          green
+                                          common/green
                                           qpu/default-font
                                           text-size)
                                          (assoc :init-coords [cx 0])
@@ -522,7 +517,7 @@
                     (map (fn [{[cx cy :as coords] :init-coords [spx spy :as spos] :pos :as s}]
                            (cond
                              (and (not (#{:duplicate :reference} (:sprite-group s)))
-                                  (= green (:color s))
+                                  (= common/green (:color s))
                                   (or (<= 1 cx 19)
                                       (<= 20 cx 37)))
                              (qptween/add-tween
@@ -570,19 +565,19 @@
                                (qptween/add-tween
                                 (qptween/tween
                                  :color
-                                 (- (nth white 0) r)
+                                 (- (nth common/white 0) r)
                                  :update-fn (fn [c d] (update c 0 + d))
                                  :step-count 30))
                                (qptween/add-tween
                                 (qptween/tween
                                  :color
-                                 (- (nth white 1) g)
+                                 (- (nth common/white 1) g)
                                  :update-fn (fn [c d] (update c 1 + d))
                                  :step-count 30))
                                (qptween/add-tween
                                 (qptween/tween
                                  :color
-                                 (- (nth white 2) b)
+                                 (- (nth common/white 2) b)
                                  :update-fn (fn [c d] (update c 2 + d))
                                  :step-count 30)))                           
                            
@@ -616,19 +611,19 @@
                                      (qptween/add-tween
                                       (qptween/tween
                                        :color
-                                       (- (nth orange 0) r)
+                                       (- (nth common/orange 0) r)
                                        :update-fn (fn [c d] (update c 0 + d))
                                        :step-count 30))
                                      (qptween/add-tween
                                       (qptween/tween
                                        :color
-                                       (- (nth orange 1) g)
+                                       (- (nth common/orange 1) g)
                                        :update-fn (fn [c d] (update c 1 + d))
                                        :step-count 30))
                                      (qptween/add-tween
                                       (qptween/tween
                                        :color
-                                       (- (nth orange 2) b)
+                                       (- (nth common/orange 2) b)
                                        :update-fn (fn [c d] (update c 2 + d))
                                        :step-count 30)))
                                  s)))
@@ -655,9 +650,9 @@
                               255
                               :update-fn (fn [c d] (update c 3 + d))
                               :step-count 20)))
-                          [(hidable-text-sprite "(" p-6 (assoc orange 3 0) qpu/default-font text-size)
-                           (hidable-text-sprite "f" p-5 (assoc orange 3 0) qpu/default-font text-size)
-                           (hidable-text-sprite ")" p40 (assoc orange 3 0) qpu/default-font text-size)]))))))
+                          [(hidable-text-sprite "(" p-6 (assoc common/orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite "f" p-5 (assoc common/orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite ")" p40 (assoc common/orange 3 0) qpu/default-font text-size)]))))))
 
    ;; Add wrapping (f ... )
    (fn [{:keys [current-scene] :as state}]
@@ -680,17 +675,17 @@
                               255
                               :update-fn (fn [c d] (update c 3 + d))
                               :step-count 20)))
-                          [(hidable-text-sprite "(" p-9 (assoc orange 3 0) qpu/default-font text-size)
-                           (hidable-text-sprite "f" p-8 (assoc orange 3 0) qpu/default-font text-size)
-                           (hidable-text-sprite ")" p41 (assoc orange 3 0) qpu/default-font text-size)]))))))
+                          [(hidable-text-sprite "(" p-9 (assoc common/orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite "f" p-8 (assoc common/orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite ")" p41 (assoc common/orange 3 0) qpu/default-font text-size)]))))))
 
-   ;; Add wrapping (f ... )
+   ;; Add wrapping .......(f ... ).......
    (fn [{:keys [current-scene] :as state}]
      (let [content (get-in state [:scenes current-scene :content])
            center-pos (calc-center-pos (content-pos)
                                        content
                                        text-size)
-           p-12 (char-pos center-pos [-12 0] text-size)
+           p-26 (char-pos center-pos [-26 0] text-size)
            p-11 (char-pos center-pos [-11 0] text-size)
            p42 (char-pos center-pos [42 0] text-size)]
        (update-in state [:scenes current-scene :sprites]
@@ -705,9 +700,9 @@
                               255
                               :update-fn (fn [c d] (update c 3 + d))
                               :step-count 20)))
-                          [(hidable-text-sprite "(" p-12 (assoc orange 3 0) qpu/default-font text-size)
-                           (hidable-text-sprite "f" p-11 (assoc orange 3 0) qpu/default-font text-size)
-                           (hidable-text-sprite ")" p42 (assoc orange 3 0) qpu/default-font text-size)]))))))])
+                          [(hidable-text-sprite "..............(" p-26 (assoc common/orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite "f" p-11 (assoc common/orange 3 0) qpu/default-font text-size)
+                           (hidable-text-sprite ")...................................." p42 (assoc common/orange 3 0) qpu/default-font text-size)]))))))])
 
 (defn handle-mouse-pressed
   [{:keys [current-scene] :as state} e]
@@ -731,7 +726,10 @@
 (defn handle-key-pressed
   [state e]
   (cond
-    (= :space (:key e)) (qpscene/transition state :self-application)
+    (= :1 (:key e)) (qpscene/transition state :self-application)
+    (= :2 (:key e)) (qpscene/transition state :wrapped-self-application)
+    (= :3 (:key e)) (qpscene/transition state :circles)
+    ;; (= :4 (:key e)) (qpscene/transition state :finale?)
     (= :r (:key e)) (do (prn "Recording? " (not (:recording? state)))
                         (update state :recording? not))
     :else state))

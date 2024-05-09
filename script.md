@@ -290,3 +290,5 @@ For me the fact that we can implement recursion in an environment that doesn't h
 <alt> Recursion exists as a fundamental universal truth, you need only the heart to find it
 
 If you're after some loosely related further reading I can recommend these books, each of which go over some aspect of what we've talked about today.
+
+<!-- ;; @TODO: reading list explanation -->
