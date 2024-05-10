@@ -38,20 +38,39 @@
 ;; @NOTE: do we want this?
 ;; then condition should return false, return value?
 
-(defn draw-step-circle
+(defn draw-self-circle
   [{[x y :as pos] :pos
     :keys [color stroke-color size]
-    :as step-circle}]
+    :as circle}]
   (when (pos? size)
     (qpu/fill color)
     (qpu/stroke stroke-color)
     (q/stroke-weight 6)
     (q/ellipse x y size size)))
 
-(defn step-circle
+(defn draw-wrapped-circle
+  [{[x y :as pos] :pos
+    :keys [color stroke-color size]
+    :as circle}]
+  (doseq [i (range 80)]
+    (let [inner-size (- size (* i 300))]
+      (when (pos? inner-size)
+        (qpu/fill color)
+        (qpu/stroke stroke-color)
+        (q/stroke-weight 6)
+        (q/ellipse x y inner-size inner-size)))))
+
+(defn draw-delayed-circle
+  [s]
+  ;; @TODO: replace
+  (draw-self-circle s))
+
+(defn circle
   [sprite-group pos size]
   {:sprite-group sprite-group
-   :draw-fn draw-step-circle
+   :draw-fn (sprite-group {:self draw-self-circle
+                           :wrapped draw-wrapped-circle
+                           :delayed draw-delayed-circle})
    :update-fn identity
    :pos pos
    :color common/blue
@@ -63,19 +82,18 @@
 
 (defn self-sprites
   []
-  [(step-circle :self [(* (q/width) 0.5) (* (q/height) 0.5)] 300)
-   (assoc (step-circle :self [(* (q/width) 0.5) (* (q/height) 0.5)] 0)
+  [(circle :self [(* (q/width) 0.5) (* (q/height) 0.5)] 300)
+   (assoc (circle :self [(* (q/width) 0.5) (* (q/height) 0.5)] 0)
           :animated? true
           :color (vec (qpu/darken common/blue)))])
 
 (defn wrapped-sprites
   []
-  (for [i (range 80)]
-    (step-circle :wrapped [(* (q/width) 0.6) (* (q/height) 0.5)] (- 300 (* i 300)))))
+  [(circle :wrapped [(* (q/width) 0.6) (* (q/height) 0.5)] 300)])
 
 (defn delayed-sprites
   []
-  [(step-circle :delayed [(* (q/width) 0.4) (* (q/height) 0.5)] 300)])
+  [(circle :delayed [(* (q/width) 0.4) (* (q/height) 0.5)] 300)])
 
 (defn sprites
   "The initial list of sprites for this scene"
@@ -182,6 +200,8 @@
     (= :a (:key e)) (assoc-in state [:scenes current-scene :sprites] (self-sprites))
     (= :b (:key e)) (assoc-in state [:scenes current-scene :sprites] (wrapped-sprites))
     (= :c (:key e)) (assoc-in state [:scenes current-scene :sprites] (delayed-sprites))
+
+    (= :space (:key e)) (handle-mouse-pressed state {})
 
     (= :r (:key e)) (do (prn "Recording? " (not (:recording? state)))
                         (update state :recording? not))
