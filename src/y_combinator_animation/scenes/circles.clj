@@ -52,9 +52,10 @@
   [{[x y :as pos] :pos
     :keys [color stroke-color size]
     :as circle}]
-  (doseq [i (range 80)]
+  (doseq [i (range 200)]
     (let [inner-size (- size (* i 300))]
-      (when (pos? inner-size)
+      (when (and (pos? inner-size)
+                 (< inner-size (q/width)))
         (qpu/fill color)
         (qpu/stroke stroke-color)
         (q/stroke-weight 6)
@@ -109,22 +110,13 @@
   (when (:recording? state)
     (q/save-frame "output/circles-####.jpg")))
 
-(defn remove-big-wrapped
-  [{:keys [current-scene] :as state}]
-  (let [small-sprites (remove
-                       (fn [s] (< 3000 (:size s)))
-                       (get-in state [:scenes current-scene :sprites]))]
-    (assoc-in state [:scenes current-scene :sprites]
-              small-sprites)))
-
 (defn update-circles
   "Called each frame, update the sprites in the current scene"
   [state]
   (-> state
       qpsprite/update-scene-sprites
       qptween/update-sprite-tweens
-      qpdelay/update-delays
-      remove-big-wrapped))
+      qpdelay/update-delays))
 
 (declare add-self-expansion-tween)
 (declare add-self-color-tweens)
