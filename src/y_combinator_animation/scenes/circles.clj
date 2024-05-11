@@ -86,6 +86,7 @@
    [(circle :self [(* (q/width) 0.7) (* (q/height) 0.5)] 300)
     (assoc (circle :self [(* (q/width) 0.7) (* (q/height) 0.5)] 0)
            :animated? true
+           ;; @TODO: update quip darken to return a vector, or we can't tween colours
            :color (vec (qpu/darken common/blue)))]
    (multi-line-text
     "(fn [x]
@@ -103,15 +104,29 @@
 
 (defn delayed-sprites
   []
-  (concat
-   [(circle :delayed-wrapped [(* (q/width) 0.7) (* (q/height) 0.5)] 300)
-    (circle :delayed [(* (q/width) 0.7) (* (q/height) 0.5)] 300)]
-   (multi-line-text
-    "(fn [x]
+  (let [circle-pos [(* (q/width) 0.7) (* (q/height) 0.5)]]
+    (concat
+     [(circle :delayed-wrapped circle-pos 300)
+      (circle :delayed circle-pos 300)
+      (qpsprite/text-sprite
+       "c"
+       (map + circle-pos [(- (* text-size 0.5 1.5))
+                          (* text-size 0.5 0.5)])
+       :sprite-group :conditional
+       :color (vec (nth (iterate qpu/darken common/blue) 5))
+       :size text-size)
+      (qpsprite/text-sprite
+       "λ"
+       (map + circle-pos [(* text-size 0.5 1.5)
+                          (* text-size 0.5 0.5)])
+       :sprite-group :lambda
+       :color (vec (nth (iterate qpu/darken common/blue) 5))
+       :size text-size)]
+     (multi-line-text
+      "(fn [x]
   (f (fn [y]
-       ((x x) y))))
-λ"
-    [(* (q/width) 0.05) (- (* (q/height) 0.5) (* dy 1.5 text-size))])))
+       ((x x) y))))"
+      [(* (q/width) 0.05) (- (* (q/height) 0.5) (* dy 1.5 text-size))]))))
 
 (defn sprites
   "The initial list of sprites for this scene"
@@ -198,12 +213,11 @@
 
 ;; so like a `c` and a `λ`
 
-; ;can we draw a lambda?
-
-
 (defn add-delayed-tweens
   [s]
-  s)
+  ;; @TODO: this is targeting the `c`, turning it green, we should be adding a `?` instead, then turning the c green, etc.
+  (common/tween-to-color s common/green {:step-count 10
+                                         :easing-fn qptween/ease-out-sine}))
 
 (defn handle-mouse-pressed
   [{:keys [variant current-scene] :as state} e]
@@ -224,7 +238,7 @@
     :c (-> state
            (assoc-in [:scenes current-scene :sprites] (delayed-sprites))
            (qpsprite/update-sprites-by-pred
-            (qpsprite/group-pred :delayed-wrapped)
+            (qpsprite/group-pred :conditional)
             add-delayed-tweens))
 
     nil state))
