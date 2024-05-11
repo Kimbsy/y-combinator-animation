@@ -13,35 +13,16 @@
 ;; magic variable for pleasant vertical line spacing
 (def dy 1.3)
 
-;; show self evl lambda, show circle evaluating to itself in a loop
+;; This scene compares the evaluation of our different expressions
+;; using helpful graphical representations.
 
-;; show wrappped, show circle wrapping circle wrapping circle expanding outward
+;; The self application lambda evaluates to itself
 
-;; show delayed, then do rest?
+;; The wrapped self evaluation lambda continuously wraps itself
 
-
-
-
-
-
-
-;; This animation is meant to help explain the process of dynamically building the chain of functions sing the delayed evaluation lambda.
-
-;; Each function has a reference to a function that when invoked will create the next step of the iteration.
-
-;; Show (Y f), it should create a circle representing this iteration.
-
-;; The circle should contain a `recur-fn` thing
-
-;; the circle should show a condition being checked, then invoking the `recur-fn` which creates a new circle
-
-;; then again
-
-;; then again
-
-
-;; @NOTE: do we want this?
-;; then condition should return false, return value?
+;; The delayed self evaluation lambda has a reference to a recur-fn
+;; and decides to invoke it based on a condition, when invoked it
+;; wraps itself.
 
 (defn draw-self-circle
   [{[x y :as pos] :pos
@@ -68,23 +49,24 @@
 
 (defn draw-delayed-circle
   [s]
-  ;; @TODO: replace
   (draw-self-circle s))
+
+(defn draw-delayed-wrapped-circle
+  [s]
+  (draw-wrapped-circle s))
 
 (defn circle
   [sprite-group pos size]
   {:sprite-group sprite-group
    :draw-fn (sprite-group {:self draw-self-circle
                            :wrapped draw-wrapped-circle
-                           :delayed draw-delayed-circle})
+                           :delayed draw-delayed-circle
+                           :delayed-wrapped draw-delayed-wrapped-circle})
    :update-fn identity
    :pos pos
    :color common/blue
    :stroke-color common/white
    :size size})
-
-
-;; @TODO: add text sprites showing which expression we're evaluating
 
 (defn multi-line-text
   [content pos]
@@ -122,11 +104,13 @@
 (defn delayed-sprites
   []
   (concat
-   [(circle :delayed [(* (q/width) 0.7) (* (q/height) 0.5)] 300)]
+   [(circle :delayed-wrapped [(* (q/width) 0.7) (* (q/height) 0.5)] 300)
+    (circle :delayed [(* (q/width) 0.7) (* (q/height) 0.5)] 300)]
    (multi-line-text
     "(fn [x]
   (f (fn [y]
-       ((x x) y))))"
+       ((x x) y))))
+λ"
     [(* (q/width) 0.05) (- (* (q/height) 0.5) (* dy 1.5 text-size))])))
 
 (defn sprites
@@ -196,23 +180,54 @@
         :easing-fn qptween/ease-out-sine
         :on-complete-fn add-wrapped-expansion-tween))))
 
+;; The delayed self evaluation lambda has a reference to a recur-fn
+;; and decides to invoke it based on a condition, when invoked it
+;; wraps itself.
+
+
+
+;; maybe we want to show a question mark representing the condition?
+
+;; maybe we want a lambda symbol to represent the recur-fn?
+
+;; pulse the question mark green, then pulse the lambda, then wrap?
+
+;; maybe the condition should be something else, then we can show
+;; we're testing the condition by adding a question mark, then show
+;; we've evaluated it by either going green or red?
+
+;; so like a `c` and a `λ`
+
+; ;can we draw a lambda?
+
+
+(defn add-delayed-tweens
+  [s]
+  s)
+
 (defn handle-mouse-pressed
-  [state e]
-  (-> state
-      (qpsprite/update-sprites-by-pred
-       (fn [s] (and (:animated? s)
-                    (= :self (:sprite-group s))))
-       add-self-expansion-tween)
+  [{:keys [variant current-scene] :as state} e]
+  (case variant
+    :a (-> state
+           (assoc-in [:scenes current-scene :sprites] (self-sprites))
+           (qpsprite/update-sprites-by-pred
+            (fn [s] (and (:animated? s)
+                         (= :self (:sprite-group s))))
+            add-self-expansion-tween))
 
-      (qpsprite/update-sprites-by-pred
-       (qpsprite/group-pred :wrapped)
-       add-wrapped-expansion-tween)
+    :b (-> state
+           (assoc-in [:scenes current-scene :sprites] (wrapped-sprites))
+           (qpsprite/update-sprites-by-pred
+            (qpsprite/group-pred :wrapped)
+            add-wrapped-expansion-tween))
 
-      ;; @TODO: need third case for delayed eval where we show some condition being checked?
-      #_(qpsprite/update-sprites-by-pred
-       (fn [s] (and (:animated? s)
-                    (= :delayed (:sprite-group s))))
-       add-delayed-expansion-tween)))
+    :c (-> state
+           (assoc-in [:scenes current-scene :sprites] (delayed-sprites))
+           (qpsprite/update-sprites-by-pred
+            (qpsprite/group-pred :delayed-wrapped)
+            add-delayed-tweens))
+
+    nil state))
 
 (defn handle-key-pressed
   [{:keys [current-scene] :as state} e]
@@ -222,9 +237,15 @@
     (= :3 (:key e)) (qpscene/transition state :circles)
     ;; (= :4 (:key e)) (qpscene/transition state :finale?)
 
-    (= :a (:key e)) (assoc-in state [:scenes current-scene :sprites] (self-sprites))
-    (= :b (:key e)) (assoc-in state [:scenes current-scene :sprites] (wrapped-sprites))
-    (= :c (:key e)) (assoc-in state [:scenes current-scene :sprites] (delayed-sprites))
+    (= :a (:key e)) (-> state
+                        (assoc :variant :a)
+                        (assoc-in [:scenes current-scene :sprites] (self-sprites)))
+    (= :b (:key e)) (-> state
+                        (assoc :variant :b)
+                        (assoc-in [:scenes current-scene :sprites] (wrapped-sprites)))
+    (= :c (:key e)) (-> state
+                        (assoc :variant :c)
+                        (assoc-in [:scenes current-scene :sprites] (delayed-sprites)))
 
     (= :space (:key e)) (handle-mouse-pressed state {})
 

@@ -7,7 +7,8 @@
 
 (defn setup
   []
-  {:recording? false})
+  {:recording? false
+   :variant :a})
 
 (defn init-scenes
   []
