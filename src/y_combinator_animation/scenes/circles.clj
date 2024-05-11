@@ -8,6 +8,11 @@
             [clojure.string :as s]
             [y-combinator-animation.common :as common]))
 
+(def text-size (* 4 qpu/default-text-size))
+
+;; magic variable for pleasant vertical line spacing
+(def dy 1.3)
+
 ;; show self evl lambda, show circle evaluating to itself in a loop
 
 ;; show wrappped, show circle wrapping circle wrapping circle expanding outward
@@ -55,7 +60,7 @@
   (doseq [i (range 200)]
     (let [inner-size (- size (* i 300))]
       (when (and (pos? inner-size)
-                 (< inner-size (q/width)))
+                 (< inner-size (+ (q/width) (q/height))))
         (qpu/fill color)
         (qpu/stroke stroke-color)
         (q/stroke-weight 6)
@@ -81,20 +86,48 @@
 
 ;; @TODO: add text sprites showing which expression we're evaluating
 
+(defn multi-line-text
+  [content pos]
+  (map-indexed
+   (fn [i s]
+     (qpsprite/text-sprite
+      s
+      (map + pos [0 (* dy i text-size)])
+      :color common/white
+      :size text-size
+      :offsets [:left :top]))
+   (clojure.string/split content #"\n")))
+
 (defn self-sprites
   []
-  [(circle :self [(* (q/width) 0.5) (* (q/height) 0.5)] 300)
-   (assoc (circle :self [(* (q/width) 0.5) (* (q/height) 0.5)] 0)
-          :animated? true
-          :color (vec (qpu/darken common/blue)))])
+  (concat
+   [(circle :self [(* (q/width) 0.7) (* (q/height) 0.5)] 300)
+    (assoc (circle :self [(* (q/width) 0.7) (* (q/height) 0.5)] 0)
+           :animated? true
+           :color (vec (qpu/darken common/blue)))]
+   (multi-line-text
+    "(fn [x]
+  (x x))"
+    [(* (q/width) 0.15) (- (* (q/height) 0.5) (* dy text-size))])))
 
 (defn wrapped-sprites
   []
-  [(circle :wrapped [(* (q/width) 0.6) (* (q/height) 0.5)] 300)])
+  (concat
+   [(circle :wrapped [(* (q/width) 0.7) (* (q/height) 0.5)] 300)]
+   (multi-line-text
+    "(fn [x]
+  (f (x x)))"
+    [(* (q/width) 0.1) (- (* (q/height) 0.5) (* dy text-size))])))
 
 (defn delayed-sprites
   []
-  [(circle :delayed [(* (q/width) 0.4) (* (q/height) 0.5)] 300)])
+  (concat
+   [(circle :delayed [(* (q/width) 0.7) (* (q/height) 0.5)] 300)]
+   (multi-line-text
+    "(fn [x]
+  (f (fn [y]
+       ((x x) y))))"
+    [(* (q/width) 0.05) (- (* (q/height) 0.5) (* dy 1.5 text-size))])))
 
 (defn sprites
   "The initial list of sprites for this scene"
