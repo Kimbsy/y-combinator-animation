@@ -214,7 +214,6 @@ So what happens if we apply this function to itself? It will invoke `f` applied 
 
 So `f` is going to be passed this lambda, and if it decides to invoke it it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f` which can make the same choice. Each layer has the ability to create the next layer if it wants to.
 
-<!-- ;; @TODO: make this -->
 > DEMO or video, high level simulation of creating a chain of bubbles which dynamically decide whether to extend the chain
 
 ## what the f?

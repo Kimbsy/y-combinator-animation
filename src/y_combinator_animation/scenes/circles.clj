@@ -43,7 +43,7 @@
   (doseq [i (range 200)]
     (let [inner-size (- size (* i 300))]
       (when (and (pos? inner-size)
-                 (< inner-size (+ (q/width) (q/height))))
+                 (< inner-size (+ (q/width) (q/height) 300)))
         (qpu/fill color)
         (qpu/stroke stroke-color)
         (q/stroke-weight 6)
@@ -249,7 +249,7 @@
    {:step-count color-change-step-count
     :easing-fn qptween/ease-out-sine}))
 
-(defn activate-lambda
+(defn activate-text
   [s]
   (-> s
       (qptween/add-tween
@@ -287,7 +287,7 @@
      (-> state
          (qpsprite/update-sprites-by-pred
           (common/groups-pred [:qmark :conditional])
-          go-white)))
+          activate-text)))
    ;; go green
    (fn [state]
      (qpsprite/update-sprites-by-pred
@@ -299,7 +299,7 @@
      (qpsprite/update-sprites-by-pred
       state
       (qpsprite/group-pred :lambda)
-      activate-lambda))
+      activate-text))
    ;; expand circle
    (fn [state]
      (qpsprite/update-sprites-by-pred
@@ -321,7 +321,7 @@
       (assoc-in [:scenes current-scene :delays]
                 (qpdelay/sequential-delays
                  (map (fn [d f] [d f])
-                      [0 50 50 0 20 50]
+                      [0 30 50 0 20 50]
                       delayed-animation-sequence)))))
 
 (defn handle-mouse-pressed

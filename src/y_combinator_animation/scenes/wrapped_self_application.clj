@@ -8,15 +8,6 @@
             [clojure.string :as s]
             [y-combinator-animation.common :as common]))
 
-;; @TODO: need ot figure out a nice way of describing a transition
-
-
-;; maybe we just want the characters to be individual text sprites and
-;; not be contained in a compound sprite? each cant have :pos [x y] on
-;; it and we can update specific ones by that. once the transform is
-;; complete we can replace them all with a new set of sprites so we
-;; have a clean slate.
-
 (declare init)
 
 (def text-size (* 2 qpu/default-text-size))

@@ -42,7 +42,7 @@ An understanding of functional programming is assumed. Experience with (or expos
 ## Part 3 - final pieces
 
 - delayed evaluation lambda
-- <animation>
+
 - what is f?
 - use f chain to solve problems
 - <animation>?
@@ -51,7 +51,6 @@ An understanding of functional programming is assumed. Experience with (or expos
 
 # TODO:
 
-- make demo for simple dynamic chain
 - make demo for final `count` example
 - make slides for delayed eval
 - make slides for what the f
