@@ -8,6 +8,8 @@
             [clojure.string :as s]
             [y-combinator-animation.common :as common]))
 
+;; @TODO: we probably want this to be based on the screen size? how
+;; big is the projector?????
 (def text-size (* 4 qpu/default-text-size))
 
 ;; magic variable for pleasant vertical line spacing
@@ -86,8 +88,7 @@
    [(circle :self [(* (q/width) 0.7) (* (q/height) 0.5)] 300)
     (assoc (circle :self [(* (q/width) 0.7) (* (q/height) 0.5)] 0)
            :animated? true
-           ;; @TODO: update quip darken to return a vector, or we can't tween colours
-           :color (vec (qpu/darken common/blue)))]
+           :color (common/darken common/blue))]
    (multi-line-text
     "(fn [x]
   (x x))"
@@ -113,14 +114,21 @@
        (map + circle-pos [(- (* text-size 0.5 1.5))
                           (* text-size 0.5 0.5)])
        :sprite-group :conditional
-       :color (vec (nth (iterate qpu/darken common/blue) 5))
+       :color (nth (iterate common/darken common/blue) 2)
+       :size text-size)
+      (qpsprite/text-sprite
+       "?"
+       (map + circle-pos [(- (* text-size 0.5 0.5))
+                          (* text-size 0.5 0.5)])
+       :sprite-group :qmark
+       :color (nth (iterate common/darken common/blue) 2)
        :size text-size)
       (qpsprite/text-sprite
        "λ"
        (map + circle-pos [(* text-size 0.5 1.5)
                           (* text-size 0.5 0.5)])
        :sprite-group :lambda
-       :color (vec (nth (iterate qpu/darken common/blue) 5))
+       :color (nth (iterate common/darken common/blue) 2)
        :size text-size)]
      (multi-line-text
       "(fn [x]
@@ -156,7 +164,7 @@
 (defn add-self-expansion-tween
   [s]
   (-> s
-      (assoc :color (vec (qpu/darken common/blue)))
+      (assoc :color (common/darken common/blue))
       (qptween/add-tween
        (qptween/tween :size 300
                       :step-count 30
@@ -199,25 +207,122 @@
 ;; and decides to invoke it based on a condition, when invoked it
 ;; wraps itself.
 
+(def color-change-step-count 10)
 
+(defn fade-in
+  [{:keys [color] :as s}]
+  (common/tween-to-color
+   s
+   (assoc color 3 255)
+   {:step-count color-change-step-count
+    :easing-fn qptween/ease-out-sine}))
 
-;; maybe we want to show a question mark representing the condition?
+(defn fade-out
+  [{:keys [color] :as s}]
+  (common/tween-to-color
+   s
+   (assoc color 3 0)
+   {:step-count color-change-step-count
+    :easing-fn qptween/ease-out-sine}))
 
-;; maybe we want a lambda symbol to represent the recur-fn?
-
-;; pulse the question mark green, then pulse the lambda, then wrap?
-
-;; maybe the condition should be something else, then we can show
-;; we're testing the condition by adding a question mark, then show
-;; we've evaluated it by either going green or red?
-
-;; so like a `c` and a `λ`
-
-(defn add-delayed-tweens
+(defn go-white
   [s]
-  ;; @TODO: this is targeting the `c`, turning it green, we should be adding a `?` instead, then turning the c green, etc.
-  (common/tween-to-color s common/green {:step-count 10
-                                         :easing-fn qptween/ease-out-sine}))
+  (common/tween-to-color
+   s
+   common/white
+   {:step-count color-change-step-count
+    :easing-fn qptween/ease-out-sine}))
+
+(defn go-green
+  [s]
+  (common/tween-to-color
+   s
+   common/green
+   {:step-count color-change-step-count
+    :easing-fn qptween/ease-out-sine}))
+
+(defn go-dark-blue
+  [s]
+  (common/tween-to-color
+   s
+   (nth (iterate common/darken common/blue) 2)
+   {:step-count color-change-step-count
+    :easing-fn qptween/ease-out-sine}))
+
+(defn activate-lambda
+  [s]
+  (-> s
+      (qptween/add-tween
+       (qptween/tween
+        :pos
+        20
+        :update-fn qptween/tween-y-fn
+        :yoyo? true
+        :yoyo-update-fn qptween/tween-y-yoyo-fn
+        :easing-fn qptween/ease-out-sine
+        :step-count 5))
+      go-white))
+
+(defn add-delayed-expansion-tween
+  [s]
+  (-> s
+      (qptween/add-tween
+       (qptween/tween
+        :size 300
+        :step-count 10
+        :easing-fn qptween/ease-out-sine))))
+
+(defn deactivate-all
+  [state]
+  (-> state
+      (qpsprite/update-sprites-by-pred
+       (common/groups-pred [:qmark :conditional :lambda])
+       go-dark-blue)))
+
+(declare init-delayed-animation)
+
+(def delayed-animation-sequence
+  [;; check condition
+   (fn [state]
+     (-> state
+         (qpsprite/update-sprites-by-pred
+          (common/groups-pred [:qmark :conditional])
+          go-white)))
+   ;; go green
+   (fn [state]
+     (qpsprite/update-sprites-by-pred
+      state
+      (common/groups-pred [:qmark :conditional])
+      go-green))
+   ;; activate lambda
+   (fn [state]
+     (qpsprite/update-sprites-by-pred
+      state
+      (qpsprite/group-pred :lambda)
+      activate-lambda))
+   ;; expand circle
+   (fn [state]
+     (qpsprite/update-sprites-by-pred
+      state
+      (qpsprite/group-pred :delayed-wrapped)
+      add-delayed-expansion-tween))
+   ;; deactivate-all
+   (fn [state]
+     (deactivate-all state))
+   ;; loop if we're still on variant `c`
+   (fn [state]
+     (if (= :c (:variant state))
+       (init-delayed-animation state)
+       state))])
+
+(defn init-delayed-animation
+  [{:keys [current-scene] :as state}]
+  (-> state
+      (assoc-in [:scenes current-scene :delays]
+                (qpdelay/sequential-delays
+                 (map (fn [d f] [d f])
+                      [0 50 50 0 20 50]
+                      delayed-animation-sequence)))))
 
 (defn handle-mouse-pressed
   [{:keys [variant current-scene] :as state} e]
@@ -237,9 +342,7 @@
 
     :c (-> state
            (assoc-in [:scenes current-scene :sprites] (delayed-sprites))
-           (qpsprite/update-sprites-by-pred
-            (qpsprite/group-pred :conditional)
-            add-delayed-tweens))
+           init-delayed-animation)
 
     nil state))
 
@@ -253,12 +356,15 @@
 
     (= :a (:key e)) (-> state
                         (assoc :variant :a)
+                        (assoc-in [:scenes current-scene :delays] [])
                         (assoc-in [:scenes current-scene :sprites] (self-sprites)))
     (= :b (:key e)) (-> state
                         (assoc :variant :b)
+                        (assoc-in [:scenes current-scene :delays] [])
                         (assoc-in [:scenes current-scene :sprites] (wrapped-sprites)))
     (= :c (:key e)) (-> state
                         (assoc :variant :c)
+                        (assoc-in [:scenes current-scene :delays] [])
                         (assoc-in [:scenes current-scene :sprites] (delayed-sprites)))
 
     (= :space (:key e)) (handle-mouse-pressed state {})
