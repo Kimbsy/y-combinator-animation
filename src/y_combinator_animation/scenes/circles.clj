@@ -103,6 +103,8 @@
   (f (x x)))"
     [(* (q/width) 0.1) (- (* (q/height) 0.5) (* dy text-size))])))
 
+;; @TODO: need the condition to eventually return false (go red) and then pass a value all the way back up the chain
+
 (defn delayed-sprites
   []
   (let [circle-pos [(* (q/width) 0.7) (* (q/height) 0.5)]]

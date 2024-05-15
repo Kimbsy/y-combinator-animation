@@ -695,6 +695,8 @@
                            (hidable-text-sprite "f" p-11 (assoc common/orange 3 0) qpu/default-font text-size)
                            (hidable-text-sprite ")...................................." p42 (assoc common/orange 3 0) qpu/default-font text-size)]))))))])
 
+;; @TODO: make this work on pressing space too.
+
 (defn handle-mouse-pressed
   [{:keys [current-scene] :as state} e]
   (if (= :left (:button e))

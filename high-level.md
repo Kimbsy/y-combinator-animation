@@ -51,6 +51,7 @@ An understanding of functional programming is assumed. Experience with (or expos
 
 # TODO:
 
+- get 3c demo to go red and end?
 - make demo for final `count` example
 - make slides for delayed eval
 - make slides for what the f

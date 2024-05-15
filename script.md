@@ -34,8 +34,9 @@ So what do we do when the documentation goes over our head? That's right we dive
 
 Wow. Okay. So I see some anonymous functions, lots of nested anonymous functions. This isn't exactly self-documenting code here :/
 
-So what do we do next? how about looking for an example usage that we can just copy paste?
+So the source code is lightly impenetrable, what do we do next? How about trying to find some example usage that we can just copy paste?
 
+<!-- ;; @TODO: this slide -->
 ``` Clojure
 ;; f = "factorial-ish"
 
@@ -44,11 +45,11 @@ So what do we do next? how about looking for an example usage that we can just c
 (g 5) => 120
 ```
 
-Well this is reasonably understandable, there's some function f which is factorialish, `Y` takes this function `f` and returns a new function `g` which can solve a recursive problem.
+Well this is reasonably understandable, there's some function `f` which is non-recursive, `Y` takes this function `f` and returns a new function `g` which can solve a recursive problem.
 
 That might not be super impressive until you find out that `Y` works even in languages where you don't have recursion, or iteration of any kind. No mapping, reducing, filtering, nothing. Not even for loops.
 
-So that's what it's for:
+So that's what the Y Combinator is for:
 
 > Doing recursion in languages that don’t have recursion.
 
@@ -67,9 +68,6 @@ Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad
 
 
 
-^^^^^^^^^^^^^ GOOD ^^^^^^^^^^^^^^
-
-
 
 ## Clojure primer
 
@@ -84,7 +82,7 @@ So there's a chance that some of you haven't used Clojure before (see me afterwa
 (inc (inc 42))    ;; => 44
 ```
 
-We call a function by wrapping it in parens along with its arguments. We can nest them however we like. The expressions get evaluated inside to out, so in the second example here the internal `(inc 42)` is turned into 43 and then passed into the second inc which gives us 44.
+We call a function by wrapping it in parens along with its arguments. We can nest them however we like. The expressions get evaluated inside to out, so in the second example here the internal "increment 42" is turned into 43 and then passed into the second increment which gives us 44.
 
 ### Defining a variable
 
@@ -94,7 +92,7 @@ We call a function by wrapping it in parens along with its arguments. We can nes
 (inc foo)   ;; => 43
 ```
 
-Pretty straightforward, we can create a variable called `foo` and give it a value 42. We can then use it anywhere you'd expect to be able to.
+Defining variables is pretty straightforward, we use def to create a variable called `foo` and give it a value 42. We can then use it anywhere you'd expect to be able to.
 
 ### Lambda functions
 
@@ -110,13 +108,7 @@ Pretty straightforward, we can create a variable called `foo` and give it a valu
 
 Anonymous functions have a pretty straightforward syntax. We start with `fn`, then a vector of parameters, and finally a body expression. The function will return the result of evaluating the body.
 
-We can give lambdas names with `def` and use them like variables, or we can use the lambda expression directly in place of a function name.
-
-
-<!-- @TODO: maybe write out the function as we describe it in animations maybe? maybe not? work on this -->
-
-
-^^^^^^ PRIMER IS FINE, COULD USE FINESSING ^^^^^
+We can give functions names with `def` and use them like variables, or we can use the lambda expression directly in place of a function name.
 
 
 
@@ -152,15 +144,18 @@ So we have a function that takes a single argument which is a function that take
 
 Ok so this isn't actually recursion by itself, but this psuedo-self-referential structure should definitely make us think that there's a possibility of recursion cropping up at some point.
 
-So what functions could we actually use here? I guess `identity`, that's a classic, pretty boring though.
+So what functions could we actually use here? I guess `identity`, that's a classic, pretty boring though. Identity of identity is identity.
 
-What about the self application function itself? It's a function that takes a single function as an argument? What would that do? What would it look like?
+What about the self application function itself? It should be fine since it's a function that takes a single function as an argument.
+
+<!-- ;; @TODO: add slide for this -->
+What would that do? What would evaluating this expression look like?
 
 ### self application applied to itself
 
 > DEMO or video, walk through how it evaluates to itself
 
-So what we end up with is another expression, the same expression. Now the rules of Lisp evaluation say that we can't juts stop evaluating, we need to evaluate this new expression too, but if we do that we end up in exactly the same position. We're not allowed to stop, this evaluation will keep going forever.
+So what we end up with is another expression, the same expression. Now the rules of Lisp evaluation say that we can't just stop evaluating, we need to evaluate this new expression too, but if we do that we end up in exactly the same position. We're not allowed to stop, this evaluation will keep going forever.
 
 So what we have here is a loop, it does nothing and we can't stop it, but it's still a loop.
 
@@ -178,19 +173,18 @@ facts               questions
 
 In order to start answering those questions we're going to jump back to the Y combinator and look at our second lambda here.
 
-Now this is a little more complex than we need it to be for now, so we're going to look at a simpler version first and we'll come back to this one after.
+Now this is a little more complex than we need it to be for now, so we're going to look at a simpler version first and we'll come back to this one afterwards.
 
 This function is very similar to the previous self-application function, but we have this extra call to `f` in there. We don't need to know what `f` is at this point, but just assume it is a function that exists.
+
+What happens when we apply this expression to itself?
 
 > DEMO or video, walk through how it evaluates to nested calls to f
 
 Ok, so with this function we have the ability to create an infinite stack of nested calls to some function `f`.
 
-In essence we've managed to inject some work into each iteration of the infinite evaluation loop. Nice! Our infinite evaluation loop can now perform some kind of work.
+In essence we've managed to inject some work into each iteration of the infinite evaluation loop. Nice! Our infinitely evaluating expression can now do something.
 
-
-
-^^^^^^ PRETTY GOOD, NEED TO GET FEEDBACK ^^^^^
 
 
 --------
@@ -200,9 +194,8 @@ In essence we've managed to inject some work into each iteration of the infinite
 
 <!-- ;; @TODO: need to do slides for this -->
 
-So can we stop it? yep.
+Now in order to get our loop to stop we're going to have to go back to that more complicated version of our f-wrapping lambda.
 
-Let's look at that more complicated version of the nested f function again.
 
 ``` Clojure
 (fn [x]
@@ -210,16 +203,23 @@ Let's look at that more complicated version of the nested f function again.
        ((x x) y))))
 ```
 
-So what happens if we apply this function to itself? It will invoke `f` applied to this internal lambda, and this lambda is ready to apply the `x` to the `x`, but crucially, hasn't done it yet.
+So what happens if we apply this function to itself? It will invoke `f` applied to this internal lambda, and this lambda is ready to apply the `x` to the `x`, but crucially, hasn't done it yet. This means we're not going to immediately start looping.
 
-So `f` is going to be passed this lambda, and if it decides to invoke it it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f` which can make the same choice. Each layer has the ability to create the next layer if it wants to.
+So `f` is going to be passed this lambda which it can choose to invoke or not, and if it decides to invoke it it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f` which can make the same choice. Each layer has the ability to create the next layer if it wants to.
+
+The evaluation of this expression is more complex then the previous two so lets look at it with a different kind of visualisation.
 
 > DEMO or video, high level simulation of creating a chain of bubbles which dynamically decide whether to extend the chain
 
+Okay wow so we've got everything we need right? We have the ability to do something, and we can also stop doing it.
+
+The last piece of the puzzle is how to express what we want done. And that means we need to nail down what `f` is.
+
 ## what the f?
 
-So with that in hand we can start to think about what the `f` this function actually is.
+We saw that `f` contains both some conditional statement and also a reference to the lambda that allows it to iterate one level deeper. Let's take a crack at writing one.
 
+<!-- ;; @TODO: slide for this -->
 ``` Clojure
 (def f
   (fn [internal-lambda]
@@ -228,14 +228,15 @@ So with that in hand we can start to think about what the `f` this function actu
       "just return some value")))
 ```
 
-Here's a function which takes that internal lambda as an argument, and if some condition is met it can choose to invoke that lambda which will invoke `f` again, giving it the same choice. Alternatively it can just return a value and stop the evaluation loop.
+Here's a function which takes that internal lambda as an argument, and if some condition is met it can choose to invoke that lambda. This will perform an iteration of our evaluation loop and call `f` again, giving it the same choice. Alternatively it can just return a value and stop the evaluation loop.
 
-Now this is close, but it's not quite what we want, we want to solve recursive problems, so we will have some input value that we want to pass in somewhere.  We want our `condition?` function to be checking our input value, and we want the input value to change each iteration so the condition eventually flips and we return a value instead of always going a level deeper.
+Now this is close, but it's not quite what we want, we want to solve recursive problems, so we will have some input value that we want to pass in somewhere.  We want our `condition?` to be a function that checks our input value, and we want the input value to change each iteration so the condition eventually flips and we return a value instead of always going a level deeper.
+
+To concretize our `f` function let's consider a real life problem. Counting the number of elements in a collection.
 
 <!-- ;; @TODO: need to describe this counting function, talk about how we're injecting the args, e.g. how our recur-fn takes an argument -->
-Let's look at a real life problem that we can solve recursively, counting. Specifically counting the number of elements in a collection.
 
-
+<!-- ;; @TODO: slides for this -->
 ``` Clojure
 (def count-step
   (fn [recur-fn]
@@ -248,24 +249,22 @@ Let's look at a real life problem that we can solve recursively, counting. Speci
 <!-- ;; @TODO: make this -->
 > DEMO or video, go through actual example where we have a coll
 
-Okay, we're ready to do this.
+<!-- ;; we caen have the count-step `fn` expression on screen, then highlight each expression as it gets evaluated, at the same time have a coll at the top which gets smaller each time we iterate, till there's none left, then we return numbers?????  need to think about it.-->
 
+
+
+<!-- ;; @TODO: transition to this bit? -->
+
+<!-- ;; @TODO slide for this -->
 ``` Clojure
 (def count (Y count-step))
 
-(count [0 0 0])     ;; => 3
+(count [8 4 7])     ;; => 3
 ```
 
-We can invoke the Y Combinator on our `count-step` function. The function that this returns contains a reference to a function that creates the next step (which contains a reference to the function that creates the _next_ step) etc. etc.
+We can invoke the Y Combinator on our `count-step` function. The function that this returns contains a reference to the function that creates the next step as well as the condition for when we should go deeper.
 
-When we invoke this self-building stack of functions passing in a collection `coll`, we will invoke our `recur-fn`, passing in a smaller collection each time until we reach the base case where `coll` is empty. That iteration will return the number `0`, which will get returned back up the stack to be incremented by each other step until we finally return the count of elements in our original collection `coll`.
-
-
-
-
-
-
-
+So the Y combinator gives us a function which is ready to turn itself into a stack of nested invocations of count-step. When we give this an input collection `coll` it will pass this argument down the stack cutting off values one at a time until `coll` is empty. That satisfies our base case and that iteration will return a zero. This zero is then passed back up the stack to be incremented by each previous step until the final, outermost function call returns the number of elements in the original input collection.
 
 
 
@@ -275,14 +274,14 @@ When we invoke this self-building stack of functions passing in a collection `co
 
 <!-- ;; @TODO: this need slides, they're impactful statements, maybe conclusion??? -->
 
-I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it approachable.
-
-What have we covered?
+Wow, okay so that was a lot, let's recap on what we've covered.
 
 - self application
 - infinite evaluation loops
 - delayed evaluation
 - non-recursive recursive functions
+
+I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it approachable.
 
 For me the fact that we can implement recursion in an environment that doesn't have it says something really fundamental about recursion itself. It's almost like recursion already exists everywhere as some kind of universal truth and it just takes us shuffling some functions around in weird ways to reveal it.
 
@@ -290,4 +289,13 @@ For me the fact that we can implement recursion in an environment that doesn't h
 
 If you're after some loosely related further reading I can recommend these books, each of which go over some aspect of what we've talked about today.
 
-<!-- ;; @TODO: reading list explanation -->
+Lisp in Small Pieces is the perfect book for learning about writing your own Lisp language and has a very detailed section on how the Y combinator is evaluated.
+
+To Mock a Mockingbird is a bit odd, it's mainly logic puzzles, but the later part of the book goes into Combinators in surprising depth using birds as an analogy.
+
+The little schemer is a delightful book which takes you through learning Scheme (another Lisp) with a really unique example-based structure.
+
+And SICP is a classic, which among many, many other things contains useful sections on both the Y Combinator and lisp language design in general.
+
+
+Thanks for listening
