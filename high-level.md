@@ -53,9 +53,8 @@ An understanding of functional programming is assumed. Experience with (or expos
 
 - get 3c demo to go red and end?
 - make demo for final `count` example
-- make slides for delayed eval
-- make slides for what the f
 - make slides for final example
 - make slides for outro
 - practice, time it
+- practice with second screen, presentation mode, tabbing out to animations
 - start cutting it down to 20 minutes

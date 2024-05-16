@@ -165,11 +165,11 @@
 
 
 
-      (def f
-        (fn [internal-lambda]
-          (if condition?
-            (internal-lambda)
-            "just return some value")))
+    (def f
+      (fn [internal-lambda]
+        (if condition?
+          (internal-lambda)
+          "just return some value")))
 
 
 
@@ -182,11 +182,11 @@
 
 
 
-     (def count-step
-       (fn [internal-lambda]
-         (if condition?
-           (internal-lambda)
-           "just return some value")))
+    (def count-step
+      (fn [internal-lambda]
+        (if condition?
+          (internal-lambda)
+          "just return some value")))
 
 
 
@@ -199,11 +199,11 @@
 
 
 
-     (def count-step
-       (fn [recur-fn]
-         (if condition?
-           (recur-fn)
-           "just return some value")))
+    (def count-step
+      (fn [recur-fn]
+        (if condition?
+          (recur-fn)
+          "just return some value")))
 
 
 
@@ -225,7 +225,6 @@
 
 
 
-
 -----------------------------------------------
 
 ;; Condition checks input
@@ -243,11 +242,11 @@
 
 
 
-
 -----------------------------------------------
 
 ;; Count step function
 -----------------------------------------------
+
 
 
 
@@ -257,7 +256,6 @@
           (if (not-empty coll)
             (+ 1 (recur-fn (rest coll)))
             0))))
-
 
 
 

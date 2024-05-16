@@ -38,7 +38,7 @@ So the source code is lightly impenetrable, what do we do next? How about trying
 
 <!-- ;; @TODO: this slide -->
 ``` Clojure
-;; f = "factorial-ish"
+;; given f (non-recursive)
 
 (Y f) => g
 
@@ -148,7 +148,6 @@ So what functions could we actually use here? I guess `identity`, that's a class
 
 What about the self application function itself? It should be fine since it's a function that takes a single function as an argument.
 
-<!-- ;; @TODO: add slide for this -->
 What would that do? What would evaluating this expression look like?
 
 ### self application applied to itself
@@ -192,8 +191,6 @@ In essence we've managed to inject some work into each iteration of the infinite
 
 ## delayed evaluation lambda
 
-<!-- ;; @TODO: need to do slides for this -->
-
 Now in order to get our loop to stop we're going to have to go back to that more complicated version of our f-wrapping lambda.
 
 
@@ -221,7 +218,6 @@ The last piece of the puzzle is how to express the thing that we want done. And 
 
 We saw that `f` contains both some conditional statement and also a reference to the lambda that allows it to iterate one level deeper. Let's take a crack at writing one.
 
-<!-- ;; @TODO: slide for this -->
 ``` Clojure
 (def f
   (fn [internal-lambda]
@@ -246,9 +242,8 @@ Now we just need to make the condition a function o the input collection.
 
 And finally we can put in the actual logic of how we count a collection recursively.
 
-Our condition checks whether the collection has any elemtens in it, if it does we recur with a smaller collection and add 1 to the result. in the base case where the collection _is_ empty, we just return 0.
+Our condition checks whether the collection has any elements in it, if it does we recur with a smaller collection and add 1 to the result. in the base case where the collection _is_ empty, we just return 0.
 
-<!-- ;; @TODO: slides for this -->
 ``` Clojure
 (def count-step
   (fn [recur-fn]
@@ -258,17 +253,16 @@ Our condition checks whether the collection has any elemtens in it, if it does w
         0))))
 ```
 
-;; @NOTE, should this go _after_ the example usage?
+<!-- ;; @NOTE, should this go _after_ the example usage? -->
 <!-- ;; @TODO: make this -->
 > DEMO or video, go through actual example where we have a coll
 
-<!-- ;; we caen have the count-step `fn` expression on screen, then highlight each expression as it gets evaluated, at the same time have a coll at the top which gets smaller each time we iterate, till there's none left, then we return numbers?????  need to think about it.-->
+<!-- ;; we can have the count-step `fn` expression on screen, then highlight each expression as it gets evaluated, at the same time have a coll at the top which gets smaller each time we iterate, till there's none left, then we return numbers?????  need to think about it.-->
 
 
 
 <!-- ;; @TODO: transition to this bit? -->
 
-<!-- ;; @TODO slide for this -->
 ``` Clojure
 (def count (Y count-step))
 
@@ -285,14 +279,14 @@ So the Y combinator gives us a function which is ready to turn itself into a sta
 
 ## Outro
 
-<!-- ;; @TODO: this need slides, they're impactful statements, maybe conclusion??? -->
-
 Wow, okay so that was a lot, let's recap on what we've covered.
 
 - self application
 - infinite evaluation loops
 - delayed evaluation
 - non-recursive recursive functions
+
+<!-- ;; @TODO: this need slides, they're impactful statements, maybe conclusion??? -->
 
 I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it approachable.
 
