@@ -205,15 +205,17 @@ Now in order to get our loop to stop we're going to have to go back to that more
 
 So what happens if we apply this function to itself? It will invoke `f` applied to this internal lambda, and this lambda is ready to apply the `x` to the `x`, but crucially, hasn't done it yet. This means we're not going to immediately start looping.
 
-So `f` is going to be passed this lambda which it can choose to invoke or not, and if it decides to invoke it it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f` which can make the same choice. Each layer has the ability to create the next layer if it wants to.
+So `f` is going to be passed this lambda as an argument, which it can choose to invoke or not, and if it decides to invoke it it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f` which can make the same choice. Each layer has the ability to create the next layer if it wants to.
 
 The evaluation of this expression is more complex then the previous two so lets look at it with a different kind of visualisation.
 
 > DEMO or video, high level simulation of creating a chain of bubbles which dynamically decide whether to extend the chain
 
-Okay wow so we've got everything we need right? We have the ability to do something, and we can also stop doing it.
+Okay wow so we've got everything we need right? We already had the ability to do something, and we can also stop doing it.
 
-The last piece of the puzzle is how to express what we want done. And that means we need to nail down what `f` is.
+<!-- ;; @TODO look back at the annotated y Combinator again? -->
+
+The last piece of the puzzle is how to express the thing that we want done. And that means we need to nail down what `f` is.
 
 ## what the f?
 
@@ -228,24 +230,35 @@ We saw that `f` contains both some conditional statement and also a reference to
       "just return some value")))
 ```
 
-Here's a function which takes that internal lambda as an argument, and if some condition is met it can choose to invoke that lambda. This will perform an iteration of our evaluation loop and call `f` again, giving it the same choice. Alternatively it can just return a value and stop the evaluation loop.
+Here's a function which takes that internal lambda as an argument, and if some condition is met it can choose to invoke that lambda. This will perform an iteration of our evaluation loop and call `f` again, giving it the same choice. Alternatively if the condition is false it can just return a value and stop the evaluation loop.
 
-Now this is close, but it's not quite what we want, we want to solve recursive problems, so we will have some input value that we want to pass in somewhere.  We want our `condition?` to be a function that checks our input value, and we want the input value to change each iteration so the condition eventually flips and we return a value instead of always going a level deeper.
+Now this is close, but it's not quite what we want, we want to solve recursive problems, so we'll have some input value that we want to pass in somewhere.  We want our `condition?` to be a function that checks our input value, and we want the input value to change each iteration so the condition eventually flips and we return a value instead of always going a level deeper.
 
 To concretize our `f` function let's consider a real life problem. Counting the number of elements in a collection.
 
-<!-- ;; @TODO: need to describe this counting function, talk about how we're injecting the args, e.g. how our recur-fn takes an argument -->
+Each execution of `f` represents one step in our recursive solution, so let's start give it a better name.
+
+We know the internal lambda is what allows us to recur, so let's rename that too.
+
+Also, `count-step` is going to want to return a lambda, so that we don't start solving the problem during our Y combinator call, this function that it returns is the function that we will pass our input collection to so let's add that, and make sure we're passing this input collection to the `recur-fn` too.
+
+Now we just need to make the condition a function o the input collection.
+
+And finally we can put in the actual logic of how we count a collection recursively.
+
+Our condition checks whether the collection has any elemtens in it, if it does we recur with a smaller collection and add 1 to the result. in the base case where the collection _is_ empty, we just return 0.
 
 <!-- ;; @TODO: slides for this -->
 ``` Clojure
 (def count-step
   (fn [recur-fn]
     (fn [coll]
-      (if (empty? coll)
-        0
-        (+ 1 (recur-fn (rest coll)))))))
+      (if (not-empty coll)
+        (+ 1 (recur-fn (rest coll)))
+        0))))
 ```
 
+;; @NOTE, should this go _after_ the example usage?
 <!-- ;; @TODO: make this -->
 > DEMO or video, go through actual example where we have a coll
 

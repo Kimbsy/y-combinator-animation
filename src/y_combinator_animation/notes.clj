@@ -91,6 +91,23 @@
 
 -----------------------------------------------
 
+;; Self-application function^2
+-----------------------------------------------
+
+
+
+
+
+
+            ((fn [x] (x x))
+             (fn [x] (x x)))
+
+
+
+
+
+-----------------------------------------------
+
 ;; Wrapped self-application function
 -----------------------------------------------
 
@@ -108,76 +125,157 @@
 
 -----------------------------------------------
 
-;; Factorial step function
+;; Wrapped self-application function^2
 -----------------------------------------------
 
 
 
-     (def factorial-step
+
+
+
+           ((fn [x] (f (x x)))
+            (fn [x] (f (x x))))
+
+
+
+
+
+-----------------------------------------------
+
+;; Delayed wrapped self-application function
+-----------------------------------------------
+
+
+
+
+
+             (fn [x]
+               (f (fn [y]
+                    ((x x) y))))
+
+
+
+
+
+-----------------------------------------------
+
+;; Basic `f` function structure
+-----------------------------------------------
+
+
+
+
+      (def f
+        (fn [internal-lambda]
+          (if condition?
+            (internal-lambda)
+            "just return some value")))
+
+
+
+
+-----------------------------------------------
+
+;; Rename `f`
+-----------------------------------------------
+
+
+
+
+     (def count-step
+       (fn [internal-lambda]
+         (if condition?
+           (internal-lambda)
+           "just return some value")))
+
+
+
+
+-----------------------------------------------
+
+;; Rename internal-lambda
+-----------------------------------------------
+
+
+
+
+     (def count-step
        (fn [recur-fn]
-         (fn [n]
-           (if (= n 0)
-             1
-             (* n (recur-fn (- n 1)))))))
+         (if condition?
+           (recur-fn)
+           "just return some value")))
 
 
 
 
 -----------------------------------------------
 
-;; Recursive factorial function
+;; Pass input collection
+-----------------------------------------------
+
+
+
+
+    (def count-step
+      (fn [recur-fn]
+        (fn [coll]
+          (if condition?
+            (recur-fn coll)
+            "just return some value"))))
+
+
+
+
+-----------------------------------------------
+
+;; Condition checks input
+-----------------------------------------------
+
+
+
+
+    (def count-step
+      (fn [recur-fn]
+        (fn [coll]
+          (if (condition? coll)
+            (recur-fn coll)
+            "just return some value"))))
+
+
+
+
+-----------------------------------------------
+
+;; Count step function
+-----------------------------------------------
+
+
+
+    (def count-step
+      (fn [recur-fn]
+        (fn [coll]
+          (if (not-empty coll)
+            (+ 1 (recur-fn (rest coll)))
+            0))))
+
+
+
+
+-----------------------------------------------
+
+;; Example usage
 -----------------------------------------------
 
 
 
 
 
-      (def factorial (Y factorial-step))
+      (def count (Y count-step))
 
-      (factorial 5)     ;; => 120
+      (count [8 4 2])     ;; => 3
 
 
 
 
 
 -----------------------------------------------
-
-
-
-;;
-
-
-
-
-
-
-
-(fn [x]
-  (f (fn [y]
-       ((x x) y))))
-
-(def internal-lambda
-  (fn [y]
-    ((x x) y)))
-
-(def f
-  (fn [internal-lambda]
-    (if condition?
-      (internal-lambda)
-      "just return some value")))
-
-(def f
-  (fn [internal-lambda]
-    (fn [ARG]
-      (if condition?
-        (internal-lambda <PASS IN ARG>) ; hence the y passed to (x x)
-        "just return some value"))))
-
-
-
-(def count
-  (fn [recur-fn]
-    (fn [coll]
-      (if (empty? coll)
-        0
-        (+ 1 (recur-fn (rest coll)))))))
