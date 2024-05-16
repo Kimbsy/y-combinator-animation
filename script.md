@@ -298,8 +298,6 @@ I hope this has been interesting! I've really enjoyed exploring this subject and
 
 For me the fact that we can implement recursion in an environment that doesn't have it says something really fundamental about recursion itself. It's almost like recursion already exists everywhere as some kind of universal truth and it just takes us shuffling some functions around in weird ways to reveal it.
 
-<alt> Recursion exists as a fundamental universal truth, you need only the heart to find it
-
 If you're after some loosely related further reading I can recommend these books, each of which go over some aspect of what we've talked about today.
 
 Lisp in Small Pieces is the perfect book for learning about writing your own Lisp language and has a very detailed section on how the Y combinator is evaluated.

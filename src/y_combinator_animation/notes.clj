@@ -4,7 +4,7 @@
 ;; (set-face-attribute 'default nil :height 500)
 
 ;; set font back to default
-;; (set-face-attribute 'default nil :height 115)
+;; (set-face-attribute 'default nil :height 110)
 
 ;; The Y Combinator
 -----------------------------------------------
