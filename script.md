@@ -34,7 +34,7 @@ So what do we do when the documentation goes over our head? That's right we dive
 
 Wow. Okay. So I see some anonymous functions, lots of nested anonymous functions. This isn't exactly self-documenting code here :/
 
-So the source code is lightly impenetrable, what do we do next? How about trying to find some example usage that we can just copy paste?
+So when the source code is impenetrable, what do we do next? How about trying to find some example usage that we can just copy paste?
 
 <!-- ;; @TODO: this slide -->
 ``` Clojure
@@ -120,7 +120,7 @@ We can give functions names with `def` and use them like variables, or we can us
 --------
 # part 2 - self application of self application
 
-So here we are back at the Y Combinator, let's take a look at it's structure.
+So here we are back at the Y Combinator, let's start by taking a look at it's structure.
 
 We're defining a function Y which takes a function `f` as it's argument.
 
@@ -146,7 +146,7 @@ Ok so this isn't actually recursion by itself, but this psuedo-self-referential 
 
 So what functions could we actually use here? I guess `identity`, that's a classic, pretty boring though. Identity of identity is identity.
 
-What about the self application function itself? It should be fine since it's a function that takes a single function as an argument.
+What about the self application function itself? It should be fine since it's a function that takes a single function as an argument. <CLICK>
 
 What would that do? What would evaluating this expression look like?
 
@@ -174,7 +174,7 @@ In order to start answering those questions we're going to jump back to the Y co
 
 Now this is a little more complex than we need it to be for now, so we're going to look at a simpler version first and we'll come back to this one afterwards.
 
-This function is very similar to the previous self-application function, but we have this extra call to `f` in there. We don't need to know what `f` is at this point, but just assume it is a function that exists.
+This function is very similar to the previous self-application function, but we have this extra call to `f` in there. We don't need to know what `f` is at this point, but just assume it is a function that exists. <CLICK>
 
 What happens when we apply this expression to itself?
 
@@ -200,7 +200,9 @@ Now in order to get our loop to stop we're going to have to go back to that more
        ((x x) y))))
 ```
 
-So what happens if we apply this function to itself? It will invoke `f` applied to this internal lambda, and this lambda is ready to apply the `x` to the `x`, but crucially, hasn't done it yet. This means we're not going to immediately start looping.
+So what happens if we apply this function to itself?
+
+Well, It will invoke `f` applied to this internal lambda, and this lambda is ready to apply the `x` to the `x`, but crucially, hasn't done it yet. This means we're not going to immediately start looping.
 
 So `f` is going to be passed this lambda as an argument, which it can choose to invoke or not, and if it decides to invoke it it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f` which can make the same choice. Each layer has the ability to create the next layer if it wants to.
 
@@ -210,13 +212,11 @@ The evaluation of this expression is more complex then the previous two so lets 
 
 Okay wow so we've got everything we need right? We already had the ability to do something, and we can also stop doing it.
 
-<!-- ;; @TODO look back at the annotated y Combinator again? -->
-
-The last piece of the puzzle is how to express the thing that we want done. And that means we need to nail down what `f` is.
-
-## what the f?
+The last piece of the puzzle is how do we actually express the thing that we want done. And that means we need to nail down what `f` is.
 
 We saw that `f` contains both some conditional statement and also a reference to the lambda that allows it to iterate one level deeper. Let's take a crack at writing one.
+
+## what the f?
 
 ``` Clojure
 (def f
@@ -228,7 +228,7 @@ We saw that `f` contains both some conditional statement and also a reference to
 
 Here's a function which takes that internal lambda as an argument, and if some condition is met it can choose to invoke that lambda. This will perform an iteration of our evaluation loop and call `f` again, giving it the same choice. Alternatively if the condition is false it can just return a value and stop the evaluation loop.
 
-Now this is close, but it's not quite what we want, we want to solve recursive problems, so we'll have some input value that we want to pass in somewhere.  We want our `condition?` to be a function that checks our input value, and we want the input value to change each iteration so the condition eventually flips and we return a value instead of always going a level deeper.
+Now this is close, but it's not quite what we want, we want to solve recursive problems, so we'll have some input value that we want to pass in somewhere. We want our `condition?` to be a function that checks our input value, and we want the input value to change each iteration so the condition eventually flips and we return a value instead of always going a level deeper.
 
 To concretize our `f` function let's consider a real life problem. Counting the number of elements in a collection.
 
@@ -236,13 +236,13 @@ Each execution of `f` represents one step in our recursive solution, so let's st
 
 We know the internal lambda is what allows us to recur, so let's rename that too.
 
-Also, `count-step` is going to want to return a lambda, so that we don't start solving the problem during our Y combinator call, this function that it returns is the function that we will pass our input collection to so let's add that, and make sure we're passing this input collection to the `recur-fn` too.
+Also, `count-step` is going to want to return a lambda, so that we don't start solving the problem during our Y combinator call, this function that it returns is the function `g` that we saw at the beginning, it's the function that we will pass our input collection to so let's add that, and make sure we're passing this input collection to the `recur-fn` each iteration.
 
-Now we just need to make the condition a function o the input collection.
+Now we just need to make the condition a function of the input collection.
 
-And finally we can put in the actual logic of how we count a collection recursively.
+And finally with this framework in place we can insert the actual logic of how we count a collection recursively.
 
-Our condition checks whether the collection has any elements in it, if it does we recur with a smaller collection and add 1 to the result. in the base case where the collection _is_ empty, we just return 0.
+Our condition checks whether the collection has any elements in it, if it does we recur with a smaller collection and add 1 to the result of counting that. In the base case where the collection _is_ empty, we just return 0.
 
 ``` Clojure
 (def count-step
@@ -271,7 +271,7 @@ Our condition checks whether the collection has any elements in it, if it does w
 
 We can invoke the Y Combinator on our `count-step` function. The function that this returns contains a reference to the function that creates the next step as well as the condition for when we should go deeper.
 
-So the Y combinator gives us a function which is ready to turn itself into a stack of nested invocations of count-step. When we give this an input collection `coll` it will pass this argument down the stack cutting off values one at a time until `coll` is empty. That satisfies our base case and that iteration will return a zero. This zero is then passed back up the stack to be incremented by each previous step until the final, outermost function call returns the number of elements in the original input collection.
+So the Y combinator gives us a function which is ready to turn itself into a stack of nested invocations of `count-step`. When we give this function an input collection it will pass this argument down the stack cutting off values one at a time until the collection is empty. That satisfies our base case and that iteration will return a zero. This zero is then passed back up the stack to be incremented by each previous step until the final, outermost function call returns the number of elements in the original input collection.
 
 
 
