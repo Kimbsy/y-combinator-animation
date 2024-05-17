@@ -51,6 +51,7 @@ An understanding of functional programming is assumed. Experience with (or expos
 
 # TODO:
 
+- make slide for example usage
 - get 3c demo to go red and end?
 - make demo for final `count` example
 - make slides for final example

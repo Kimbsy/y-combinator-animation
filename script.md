@@ -32,7 +32,7 @@ So what do we do when the documentation goes over our head? That's right we dive
             ((x x) y)))))))
 ```
 
-Wow. Okay. So I see some anonymous functions, lots of nested anonymous functions. This isn't exactly self-documenting code here :/
+Okay, so not the easiest read. But we can fix that. <CLICK> Perfect.
 
 So when the source code is impenetrable, what do we do next? How about trying to find some example usage that we can just copy paste?
 
@@ -214,6 +214,7 @@ Okay wow so we've got everything we need right? We already had the ability to do
 
 The last piece of the puzzle is how do we actually express the thing that we want done. And that means we need to nail down what `f` is.
 
+<!-- ;; @TODO: slikde for this, look like the animation circle -->
 We saw that `f` contains both some conditional statement and also a reference to the lambda that allows it to iterate one level deeper. Let's take a crack at writing one.
 
 ## what the f?
@@ -269,7 +270,7 @@ Our condition checks whether the collection has any elements in it, if it does w
 (count [8 4 7])     ;; => 3
 ```
 
-We can invoke the Y Combinator on our `count-step` function. The function that this returns contains a reference to the function that creates the next step as well as the condition for when we should go deeper.
+We can invoke the Y Combinator on our `count-step` function. The function that this returns contains a reference to the function that creates the next step as well as the condition for when we should go deeper, and it expects as an argument the input collection we want to count.
 
 So the Y combinator gives us a function which is ready to turn itself into a stack of nested invocations of `count-step`. When we give this function an input collection it will pass this argument down the stack cutting off values one at a time until the collection is empty. That satisfies our base case and that iteration will return a zero. This zero is then passed back up the stack to be incremented by each previous step until the final, outermost function call returns the number of elements in the original input collection.
 
@@ -302,5 +303,5 @@ The little schemer is a delightful book which takes you through learning Scheme 
 
 And SICP is a classic, which among many, many other things contains useful sections on both the Y Combinator and lisp language design in general.
 
-
+<!-- ;; @TODO: feels awkward, need to have a good signoff line -->
 Thanks for listening
