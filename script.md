@@ -32,7 +32,7 @@ So what do we do when the documentation goes over our head? That's right we dive
             ((x x) y)))))))
 ```
 
-Okay, so not the easiest read. But we can fix that. <CLICK> Perfect.
+@TODO say this is tricky to read
 
 So when the source code is impenetrable, what do we do next? How about trying to find some example usage that we can just copy paste?
 
@@ -57,7 +57,7 @@ When does that happen? What languages don't have recursion?
 
 Well maybe you're a Mathematician working in the Lambda Calculus. <CLICK> How often does one do meaningful work in an abstract computational calculus? Arguably not every day.
 
-Maybe you're writing your own language, and you're trying to do so in a purely functional way with only immutable values <CLICK>.
+Maybe you're writing your own language, <CLICK> and you're trying to do so in a purely functional way with only immutable values.
 
 <CLICK>
 
@@ -73,6 +73,7 @@ Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad
 
 So there's a chance that some of you haven't used Clojure before (see me afterwards, I'll get you hooked up). Dont' worry, Here's what you need to know to follow along.
 
+<!-- ;; @TODO: maybe make the inside ot outside meaningful with a order operations eample? -->
 ### Call a function
 
 ``` Clojure
@@ -96,6 +97,7 @@ Defining variables is pretty straightforward, we use def to create a variable ca
 
 ### Lambda functions
 
+<!-- ;; @TODO: split this into 3 paragraphs on clicks -->
 ``` Clojure
 (fn [param1 param2 ...] (stuff here))
 
@@ -146,7 +148,10 @@ Ok so this isn't actually recursion by itself, but this psuedo-self-referential 
 
 So what functions could we actually use here? I guess `identity`, that's a classic, pretty boring though. Identity of identity is identity.
 
-What about the self application function itself? It should be fine since it's a function that takes a single function as an argument. <CLICK>
+<!-- ;; @TODO: describe that we're going to wrap it in parens and give itself as an argument, slide animations for this bit-by-bit -->
+What about the self application function itself? <CLICK> It should be fine since it's a function that takes a single function as an argument.
+
+So to do this we wrap our self-application function in parens along with it's argument, <CLICK> and in this case the argument is itself. <CLICK>
 
 What would that do? What would evaluating this expression look like?
 
@@ -202,7 +207,7 @@ Now in order to get our loop to stop we're going to have to go back to that more
 
 So what happens if we apply this function to itself?
 
-Well, It will invoke `f` applied to this internal lambda, and this lambda is ready to apply the `x` to the `x`, but crucially, hasn't done it yet. This means we're not going to immediately start looping.
+Well, It will invoke `f` applied to this internal lambda, and this lambda is ready to apply the `x` to the `x`, but crucially, when `f` is invoked, hasn't done it yet. This means we're not going to immediately start looping.
 
 So `f` is going to be passed this lambda as an argument, which it can choose to invoke or not, and if it decides to invoke it it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f` which can make the same choice. Each layer has the ability to create the next layer if it wants to.
 
@@ -214,7 +219,6 @@ Okay wow so we've got everything we need right? We already had the ability to do
 
 The last piece of the puzzle is how do we actually express the thing that we want done. And that means we need to nail down what `f` is.
 
-<!-- ;; @TODO: slikde for this, look like the animation circle -->
 We saw that `f` contains both some conditional statement and also a reference to the lambda that allows it to iterate one level deeper. Let's take a crack at writing one.
 
 ## what the f?
@@ -229,15 +233,15 @@ We saw that `f` contains both some conditional statement and also a reference to
 
 Here's a function which takes that internal lambda as an argument, and if some condition is met it can choose to invoke that lambda. This will perform an iteration of our evaluation loop and call `f` again, giving it the same choice. Alternatively if the condition is false it can just return a value and stop the evaluation loop.
 
-Now this is close, but it's not quite what we want, we want to solve recursive problems, so we'll have some input value that we want to pass in somewhere. We want our `condition?` to be a function that checks our input value, and we want the input value to change each iteration so the condition eventually flips and we return a value instead of always going a level deeper.
-
-To concretize our `f` function let's consider a real life problem. Counting the number of elements in a collection.
+Now this is close, but it's not quite what we want, so to concretize our `f` function let's consider a real life problem. Counting the number of elements in a collection.
 
 Each execution of `f` represents one step in our recursive solution, so let's start give it a better name.
 
 We know the internal lambda is what allows us to recur, so let's rename that too.
 
-Also, `count-step` is going to want to return a lambda, so that we don't start solving the problem during our Y combinator call, this function that it returns is the function `g` that we saw at the beginning, it's the function that we will pass our input collection to so let's add that, and make sure we're passing this input collection to the `recur-fn` each iteration.
+`count-step` is going to want to return a lambda which we will end up calling `count`, it will be returned to us by the Y Combinator. This function will expect our input collection that we want counted, so let's add that.
+
+We also want to make sure that this input collection is passed on to the next iteration by passing it to the `recur-fn` each iteration.
 
 Now we just need to make the condition a function of the input collection.
 
@@ -280,12 +284,12 @@ So the Y combinator gives us a function which is ready to turn itself into a sta
 
 ## Outro
 
-Wow, okay so that was a lot, let's recap on what we've covered.
+Okay, let's recap what we've covered
 
-- self application
-- infinite evaluation loops
-- delayed evaluation
-- non-recursive recursive functions
+- We talked about the self application function and the surprising complexity that arises from calling it on itself
+- We talked about infinite evaluation loops, and how we can get them to do work for us
+- We talked about delaying evaluation using lambda expressions and how that let us break out of our loop
+- And we talked about how to write the non-recursive step functions that can solve recursive problems
 
 <!-- ;; @TODO: this need slides, they're impactful statements, maybe conclusion??? -->
 
@@ -303,5 +307,4 @@ The little schemer is a delightful book which takes you through learning Scheme 
 
 And SICP is a classic, which among many, many other things contains useful sections on both the Y Combinator and lisp language design in general.
 
-<!-- ;; @TODO: feels awkward, need to have a good signoff line -->
 Thanks for listening

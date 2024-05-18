@@ -23,23 +23,6 @@
 
 -----------------------------------------------
 
-;; Example usage
------------------------------------------------
-
-
-
-
-
-  ()
-
-
-
-
-
-
-
------------------------------------------------
-
 ;; Calling functions
 -----------------------------------------------
 
@@ -227,7 +210,7 @@
 
 -----------------------------------------------
 
-;; Pass input collection
+;; Take input collection
 -----------------------------------------------
 
 
@@ -237,8 +220,25 @@
       (fn [recur-fn]
         (fn [coll]
           (if condition?
-            (recur-fn coll)
+            (recur-fn)
             "just return some value"))))
+
+
+
+-----------------------------------------------
+
+;; Pass input collection recursively
+-----------------------------------------------
+
+
+
+
+(def count-step
+  (fn [recur-fn]
+    (fn [coll]
+      (if condition?
+        (recur-fn coll)
+        "just return some value"))))
 
 
 

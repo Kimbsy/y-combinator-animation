@@ -59,3 +59,12 @@ An understanding of functional programming is assumed. Experience with (or expos
 - practice, time it
 - practice with second screen, presentation mode, tabbing out to animations
 - start cutting it down to 20 minutes
+
+
+
+
+# feeback
+
+- currently 14 minutes, need to slow down, pause for jokes
+
+- stay on recap slide for beautiful summary
