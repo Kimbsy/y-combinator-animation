@@ -131,7 +131,7 @@
 (defn draw-self-application
   "Called each frame, draws the current scene to the screen"
   [state]
-  (qpu/background common/grey)
+  (qpu/background common/slide-bg-blue)
   (qpsprite/draw-scene-sprites state)
 
   (when (:recording? state)
@@ -585,6 +585,9 @@
     (= :2 (:key e)) (qpscene/transition state :wrapped-self-application)
     (= :3 (:key e)) (qpscene/transition state :circles)
     ;; (= :4 (:key e)) (qpscene/transition state :finale?)
+
+    (= :space (:key e)) (handle-mouse-pressed state {:button :left})
+
     (= :r (:key e)) (do (prn "Recording? " (not (:recording? state)))
                         (update state :recording? not))
     :else state))

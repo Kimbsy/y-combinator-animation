@@ -146,7 +146,7 @@
 (defn draw-circles
   "Called each frame, draws the current scene to the screen"
   [state]
-  (qpu/background common/grey)
+  (qpu/background common/slide-bg-blue)
   (qpsprite/draw-scene-sprites state)
 
   (when (:recording? state)
