@@ -557,8 +557,6 @@
                                s))
                            sprites)))))])
 
-;; @TODO: make this work on pressing space too.
-
 (defn handle-mouse-pressed
   [{:keys [current-scene] :as state} e]
   (if (= :left (:button e))

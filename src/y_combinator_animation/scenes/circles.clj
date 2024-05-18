@@ -30,7 +30,7 @@
   [{[x y :as pos] :pos
     :keys [color stroke-color size]
     :as circle}]
-  (when (pos? size)
+  (when (< 1 size)
     (qpu/fill color)
     (qpu/stroke stroke-color)
     (q/stroke-weight 6)
@@ -42,7 +42,7 @@
     :as circle}]
   (doseq [i (range 200)]
     (let [inner-size (- size (* i 300))]
-      (when (and (pos? inner-size)
+      (when (and (< 1 inner-size)
                  (< inner-size (+ (q/width) (q/height) 300)))
         (qpu/fill color)
         (qpu/stroke stroke-color)
@@ -103,8 +103,6 @@
   (f (x x)))"
     [(* (q/width) 0.1) (- (* (q/height) 0.5) (* dy text-size))])))
 
-;; @TODO: need the condition to eventually return false (go red) and then pass a value all the way back up the chain
-
 (defn delayed-sprites
   []
   (let [circle-pos [(* (q/width) 0.7) (* (q/height) 0.5)]]
@@ -131,6 +129,13 @@
                           (* text-size 0.5 0.5)])
        :sprite-group :lambda
        :color (nth (iterate common/darken common/blue) 2)
+       :size text-size)
+      (qpsprite/text-sprite
+       "42"
+       (map + circle-pos [0
+                          (* text-size 0.5 0.5)])
+       :sprite-group :value
+       :color (assoc (nth (iterate common/darken common/blue) 2) 3 0)
        :size text-size)]
      (multi-line-text
       "(fn [x]
@@ -251,6 +256,14 @@
    {:step-count color-change-step-count
     :easing-fn qptween/ease-out-sine}))
 
+(defn go-red
+  [s]
+  (common/tween-to-color
+   s
+   common/red
+   {:step-count color-change-step-count
+    :easing-fn qptween/ease-out-sine}))
+
 (defn activate-text
   [s]
   (-> s
@@ -274,12 +287,103 @@
         :step-count 10
         :easing-fn qptween/ease-out-sine))))
 
+(defn add-delayed-collapse-tween
+  [s]
+  (-> s
+      (qptween/add-tween
+       (qptween/tween
+        :size -300
+        :step-count 10
+        :easing-fn qptween/ease-out-sine))))
+
 (defn deactivate-all
   [state]
   (-> state
       (qpsprite/update-sprites-by-pred
        (common/groups-pred [:qmark :conditional :lambda])
        go-dark-blue)))
+
+(def expansion-cycles 3)
+
+(declare init-collapse-animation)
+
+(def collapse-animation-sequence
+  [;; check condition
+   (fn [state]
+     (-> state
+         (qpsprite/update-sprites-by-pred
+          (common/groups-pred [:qmark :conditional])
+          activate-text)))
+
+   ;; go red
+   (fn [state]
+     (qpsprite/update-sprites-by-pred
+      state
+      (common/groups-pred [:qmark :conditional])
+      go-red))
+
+   ;; turn into value
+   ;; hide c? λ
+   (fn [state]
+     (qpsprite/update-sprites-by-pred
+      state
+      (common/groups-pred [:qmark :conditional :lambda])
+      fade-out))
+   ;; make front circle green
+   (fn [state]
+     (qpsprite/update-sprites-by-pred
+      state
+      (common/groups-pred [:delayed])
+      go-green))
+   ;; show value
+   (fn [state]
+     (qpsprite/update-sprites-by-pred
+      state
+      (common/groups-pred [:value])
+      fade-in))
+
+   ;; shrink wrapper circle
+   (fn [state]
+     (qpsprite/update-sprites-by-pred
+      state
+      (qpsprite/group-pred :delayed-wrapped)
+      add-delayed-collapse-tween))
+
+   ;; loop if not done
+   (fn [{:keys [delayed-animation-cycles] :as state}]
+     (if (= :c (:variant state))
+       (if (< 0 delayed-animation-cycles)
+         (-> state
+             (update :delayed-animation-cycles dec)
+             (init-collapse-animation :continuing? true))
+         (-> state
+             ;; remove all circles
+             ((fn [st]
+                (qpsprite/update-sprites-by-pred
+                 st
+                 (common/groups-pred [:delayed :delayed-wrapped])
+                 add-delayed-collapse-tween)))
+             ;; make value green
+             ((fn [st]
+                (qpsprite/update-sprites-by-pred
+                 st
+                 (common/groups-pred [:value])
+                 go-green)))))
+       state))])
+
+(defn init-collapse-animation
+  [{:keys [current-scene] :as state} & {:keys [continuing?] :or {continuing? false}}]
+  (-> state
+      (assoc-in [:scenes current-scene :delays]
+                (qpdelay/sequential-delays
+                 (let [ds [0 30 50 0 0 50 30]]
+                   (if continuing?
+                     (map (fn [d f] [d f])
+                          [30 30]
+                          (drop 5 collapse-animation-sequence))
+                     (map (fn [d f] [d f])
+                          ds
+                          collapse-animation-sequence)))))))
 
 (declare init-delayed-animation)
 
@@ -290,31 +394,40 @@
          (qpsprite/update-sprites-by-pred
           (common/groups-pred [:qmark :conditional])
           activate-text)))
+
    ;; go green
    (fn [state]
      (qpsprite/update-sprites-by-pred
       state
       (common/groups-pred [:qmark :conditional])
       go-green))
+
    ;; activate lambda
    (fn [state]
      (qpsprite/update-sprites-by-pred
       state
       (qpsprite/group-pred :lambda)
       activate-text))
+
    ;; expand circle
    (fn [state]
      (qpsprite/update-sprites-by-pred
       state
       (qpsprite/group-pred :delayed-wrapped)
       add-delayed-expansion-tween))
+
    ;; deactivate-all
    (fn [state]
      (deactivate-all state))
+
    ;; loop if we're still on variant `c`
-   (fn [state]
+   (fn [{:keys [delayed-animation-cycles] :as state}]
      (if (= :c (:variant state))
-       (init-delayed-animation state)
+       (if (< delayed-animation-cycles (dec expansion-cycles))
+         (-> state
+             (update :delayed-animation-cycles inc)
+             init-delayed-animation)
+         (init-collapse-animation state))
        state))])
 
 (defn init-delayed-animation
@@ -366,6 +479,7 @@
                         (assoc-in [:scenes current-scene :sprites] (wrapped-sprites)))
     (= :c (:key e)) (-> state
                         (assoc :variant :c)
+                        (assoc :delayed-animation-cycles 0)
                         (assoc-in [:scenes current-scene :delays] [])
                         (assoc-in [:scenes current-scene :sprites] (delayed-sprites)))
 

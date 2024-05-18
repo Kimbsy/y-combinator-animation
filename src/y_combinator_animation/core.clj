@@ -8,7 +8,8 @@
 (defn setup
   []
   {:recording? false
-   :variant :a})
+   :variant :a
+   :delayed-animation-cycles 0})
 
 (defn init-scenes
   []
