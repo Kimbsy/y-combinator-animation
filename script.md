@@ -1,3 +1,11 @@
+>>>>>>>>>>>>>>>>>>>>
+
+@NOTE! run a repl, get the animation running in the background
+
+>>>>>>>>>>>>>>>>>>>>
+
+
+
 # Part 1 - intro and primer
 
 ## Talk Intro
