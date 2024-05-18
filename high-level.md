@@ -51,20 +51,13 @@ An understanding of functional programming is assumed. Experience with (or expos
 
 # TODO:
 
-- make slide for example usage
 - get 3c demo to go red and end?
 - make demo for final `count` example
 - make slides for final example
-- make slides for outro
-- practice, time it
+- practice
 - practice with second screen, presentation mode, tabbing out to animations
-- start cutting it down to 20 minutes
-
-
 
 
 # feeback
 
 - currently 14 minutes, need to slow down, pause for jokes
-
-- stay on recap slide for beautiful summary

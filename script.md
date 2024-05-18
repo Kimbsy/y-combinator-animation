@@ -22,7 +22,7 @@ So I mean that's pretty thorough, and we've got to presume technically correct. 
 So what do we do when the documentation goes over our head? That's right we dive blindly into the source code in the hopes that it will all start making sense. So let's look at an implementation of the Y Combinator in Clojure.
 
 ``` Clojure
-;; @TODO: add helpful docstring
+;; @TODO: add helpful comments
 (def Y
   (fn [f]
     ((fn [x]
@@ -32,11 +32,10 @@ So what do we do when the documentation goes over our head? That's right we dive
             ((x x) y)))))))
 ```
 
-@TODO say this is tricky to read
+Oof, ok, so that is .... I mean even if you write Clojure every day this is only slightly more readable than the dictionary definition.
 
-So when the source code is impenetrable, what do we do next? How about trying to find some example usage that we can just copy paste?
+But I'm sure we've all been here before, the docs weren't great and the source code isn't helping, what do we do next? How about trying to find some example usage that we can just copy paste?
 
-<!-- ;; @TODO: this slide -->
 ``` Clojure
 ;; given f (non-recursive)
 
@@ -73,7 +72,6 @@ Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad
 
 So there's a chance that some of you haven't used Clojure before (see me afterwards, I'll get you hooked up). Dont' worry, Here's what you need to know to follow along.
 
-<!-- ;; @TODO: maybe make the inside ot outside meaningful with a order operations eample? -->
 ### Call a function
 
 ``` Clojure
@@ -97,7 +95,6 @@ Defining variables is pretty straightforward, we use def to create a variable ca
 
 ### Lambda functions
 
-<!-- ;; @TODO: split this into 3 paragraphs on clicks -->
 ``` Clojure
 (fn [param1 param2 ...] (stuff here))
 
@@ -148,8 +145,7 @@ Ok so this isn't actually recursion by itself, but this psuedo-self-referential 
 
 So what functions could we actually use here? I guess `identity`, that's a classic, pretty boring though. Identity of identity is identity.
 
-<!-- ;; @TODO: describe that we're going to wrap it in parens and give itself as an argument, slide animations for this bit-by-bit -->
-What about the self application function itself? <CLICK> It should be fine since it's a function that takes a single function as an argument.
+What if we pass the self application function to itself?
 
 So to do this we wrap our self-application function in parens along with it's argument, <CLICK> and in this case the argument is itself. <CLICK>
 
