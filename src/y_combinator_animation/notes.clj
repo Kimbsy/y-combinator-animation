@@ -267,12 +267,12 @@
 
 
 
-(def count-step
-  (fn [recur-fn]
-    (fn [coll]
-      (if condition?
-        (recur-fn coll)
-        "just return some value"))))
+    (def count-step
+      (fn [recur-fn]
+        (fn [coll]
+          (if condition?
+            (recur-fn coll)
+            "just return some value"))))
 
 
 
@@ -305,7 +305,7 @@
       (fn [recur-fn]
         (fn [coll]
           (if (not-empty coll)
-            (+ 1 (recur-fn (rest coll)))
+            (inc (recur-fn (rest coll)))
             0))))
 
 
@@ -338,7 +338,7 @@
 
       (def count (Y count-step))
 
-      (step-count [8 4 2])
+      (count-step [8 4 2])
 
 
 
@@ -356,7 +356,7 @@
       (def count (Y count-step))
 
       (inc
-       (step-count [4 2]))
+       (count-step [4 2]))
 
 
 
@@ -374,7 +374,7 @@
 
       (inc
        (inc
-        (step-count [2])))
+        (count-step [2])))
 
 
 
@@ -392,7 +392,7 @@
       (inc
        (inc
         (inc
-         (step-count []))))
+         (count-step []))))
 
 
 -----------------------------------------------

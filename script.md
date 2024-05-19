@@ -1,6 +1,8 @@
 >>>>>>>>>>>>>>>>>>>>
 
 @NOTE! run a repl, get the animation running in the background
+@NOTE! make sure you get to the DEMO slides before tabbing out
+@NOTE! pace yourself, pause for jokes
 
 >>>>>>>>>>>>>>>>>>>>
 
@@ -44,15 +46,17 @@ Oof, ok, so that is .... I mean even if you write Clojure every day this is only
 
 But I'm sure we've all been here before, the docs weren't great and the source code isn't helping, what do we do next? How about trying to find some example usage that we can just copy paste?
 
-``` Clojure
-;; given f (non-recursive)
+``` JavaScript
+// Given f (a non-recursive function)
 
-(Y f) => g
+let g = Y(f)
 
-(g 5) => 120
+g(5)
+
+// => 120
 ```
 
-Well this is reasonably understandable, there's some function `f` which is non-recursive, `Y` takes this function `f` and returns a new function `g` which can solve a recursive problem.
+Well this is reasonably understandable, there's some function `f` which is non-recursive, we pass it to the Y Combinator, and this returns a new function `g`. In this case `g` seems to be calculating the factorial of 5, ok so it looks like the Y Combinator lets us create functions which can solve recursive problems.
 
 That might not be super impressive until you find out that `Y` works even in languages where you don't have recursion, or iteration of any kind. No mapping, reducing, filtering, nothing. Not even for loops.
 
@@ -70,8 +74,6 @@ Maybe you're writing your own language, <CLICK> and you're trying to do so in a 
 
 Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad set of circumstances... 
 
-
-<!-- @TODO: maybe something about beauty or elegance as a reason for doing this??? give grumpy techincal people reason to care -->
 
 
 
@@ -115,7 +117,11 @@ Defining variables is pretty straightforward, we use def to create a variable ca
 
 Anonymous functions have a pretty straightforward syntax. We start with `fn`, then a vector of parameters, and finally a body expression. The function will return the result of evaluating the body.
 
-We can give functions names with `def` and use them like variables, or we can use the lambda expression directly in place of a function name.
+If we want we can give functions names with `def`, here we create a function that takes a single argument n and adds 5 to it.
+
+Then to call this function as we saw before we wrap it in parens with it's args.
+
+Alternatively we can forgo naming the function and just use the lambda expression directly instead.
 
 
 
@@ -209,9 +215,9 @@ Now in order to get our loop to stop we're going to have to go back to that more
        ((x x) y))))
 ```
 
-So what happens if we apply this function to itself?
+We haven't discussed what `f` is yet, we're still just assuming that it's some function that exists in scope. But that's ok for now, we'll get to it later.
 
-<!-- ;; @TODO: remember `f` is a function, not syntax, double down on repeating this -->
+So what happens if we apply this function to itself?
 
 Well, It will invoke `f` applied to this internal lambda, and this lambda is ready to apply the `x` to the `x`, but crucially, when `f` is invoked, hasn't done it yet. This means we're not going to immediately start looping.
 
@@ -264,15 +270,9 @@ Our condition checks whether the collection has any elements in it, if it does w
         0))))
 ```
 
-<!-- ;; @NOTE, should this go _after_ the example usage? -->
-<!-- ;; @TODO: make this -->
-> DEMO or video, go through actual example where we have a coll
-
-<!-- ;; we can have the count-step `fn` expression on screen, then highlight each expression as it gets evaluated, at the same time have a coll at the top which gets smaller each time we iterate, till there's none left, then we return numbers?????  need to think about it.-->
 
 
-
-<!-- ;; @TODO: transition to this bit? -->
+Ok, with our `count-step` function defined, we are finally ready to do some work.
 
 ``` Clojure
 (def count (Y count-step))
@@ -280,7 +280,7 @@ Our condition checks whether the collection has any elements in it, if it does w
 (count [8 4 7])     ;; => 3
 ```
 
-We can invoke the Y Combinator on our `count-step` function. The function that this returns contains a reference to the function that creates the next step as well as the condition for when we should go deeper, and it expects as an argument the input collection we want to count.
+We can invoke the Y Combinator on our `count-step` function. This will return a new function which we call `count`. At this point `count` contains a reference to the function that creates the next step as well as the condition for when we should go deeper, and it expects as an argument the input collection we're interested in.
 
 So the Y combinator gives us a function which is ready to turn itself into a stack of nested invocations of `count-step`. When we give this function an input collection it will pass this argument down the stack cutting off values one at a time until the collection is empty. That satisfies our base case and that iteration will return a zero. This zero is then passed back up the stack to be incremented by each previous step until the final, outermost function call returns the number of elements in the original input collection.
 
@@ -294,14 +294,16 @@ Okay, let's recap what we've covered
 
 - We talked about the self application function and the surprising complexity that arises from calling it on itself
 - We talked about infinite evaluation loops, and how we can get them to do work for us
-- We talked about delaying evaluation using lambda expressions and how that let us break out of our loop
+- We talked about delaying evaluation using lambda expressions and how that let us break out of our infinite loop
 - And we talked about how to write the non-recursive step functions that can solve recursive problems
 
-<!-- ;; @TODO: this need slides, they're impactful statements, maybe conclusion??? -->
+
 
 I hope this has been interesting! I've really enjoyed exploring this subject and trying to present it in a way that makes it approachable.
 
 For me the fact that we can implement recursion in an environment that doesn't have it says something really fundamental about recursion itself. It's almost like recursion already exists everywhere as some kind of universal truth and it just takes us shuffling some functions around in weird ways to reveal it.
+
+
 
 If you're after some loosely related further reading I can recommend these books, each of which go over some aspect of what we've talked about today.
 
@@ -312,5 +314,7 @@ To Mock a Mockingbird is a bit odd, it's mainly logic puzzles, but the later par
 The little schemer is a delightful book which takes you through learning Scheme (another Lisp) with a really unique example-based structure.
 
 And SICP is a classic, which among many, many other things contains useful sections on both the Y Combinator and lisp language design in general.
+
+
 
 Thanks for listening

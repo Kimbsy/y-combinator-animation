@@ -51,32 +51,23 @@ An understanding of functional programming is assumed. Experience with (or expos
 
 # TODO:
 
-- make demo for final `count` example
-- make slides for final example
+- @TODO: THIS ONE NEXT make the delayed circle example animate slower, especially on the collapse
+
 - practice
 - practice with second screen, presentation mode, tabbing out to animations
 
-
-# feeback
-
-- @DONE currently 14 minutes, need to slow down, pause for jokes
-- always get to the DEMO slide before tabbing out
-- double down on reminding us that `f` has not been defined yet
-- remove @TODO add comments form second y combinator slide
-- count-step not step-count in finale evaluation
-- use inc in what the f slides
-- say come talk to me again at the end
-- initial example usage.js should be clearer that Y is the Y combinator
-
-- can you send fullscreeen to second display in quil????
-- email them asking about the resolution of the projectors???
+- can you send fullscreeen to second display in quil???? I think so, just `:display 1` in sketch setup? does this work with quip? no, would need to override `quip.core/run`. Also would need to make all text adjust to screen size.
 - make animations dependant on screen size
 - re-record demo videos (use real software, not image dumping)
 - add button/link to demo slides to watch them in another tab
+- delete current (legacy) video slides
+- @DONE sent email asking about projector resolution
 
-- submit question:
+- submit questions:
   - why have you chosen to do this in clojure? lisp is a AST, evluationin place is very natural, also I love clojure come see me after.
   - why have you chosen to do this at all? I wrote my first lisp, I thought it would be fun to use it to write another lisp, byt now I had no state or mutation, Y combinatoor only option. I was annoyed that it worked firs try without me needing to understand it.
 
 
+# timings
+- @DONE currently 14 minutes, need to slow down, pause for jokes
 - 19:07
