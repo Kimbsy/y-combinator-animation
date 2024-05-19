@@ -211,6 +211,8 @@ Now in order to get our loop to stop we're going to have to go back to that more
 
 So what happens if we apply this function to itself?
 
+<!-- ;; @TODO: remember `f` is a function, not syntax, double down on repeating this -->
+
 Well, It will invoke `f` applied to this internal lambda, and this lambda is ready to apply the `x` to the `x`, but crucially, when `f` is invoked, hasn't done it yet. This means we're not going to immediately start looping.
 
 So `f` is going to be passed this lambda as an argument, which it can choose to invoke or not, and if it decides to invoke it it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f` which can make the same choice. Each layer has the ability to create the next layer if it wants to.

@@ -19,7 +19,7 @@
 
 (def y-combinator-animation-game
   (qp/game {:title          "y-combinator-animation"
-            :size           :fullscreen
+            :size            [2000 1400]
             :setup          setup
             :init-scenes-fn init-scenes
             :current-scene  :self-application}))

@@ -59,4 +59,24 @@ An understanding of functional programming is assumed. Experience with (or expos
 
 # feeback
 
-- currently 14 minutes, need to slow down, pause for jokes
+- @DONE currently 14 minutes, need to slow down, pause for jokes
+- always get to the DEMO slide before tabbing out
+- double down on reminding us that `f` has not been defined yet
+- remove @TODO add comments form second y combinator slide
+- count-step not step-count in finale evaluation
+- use inc in what the f slides
+- say come talk to me again at the end
+- initial example usage.js should be clearer that Y is the Y combinator
+
+- can you send fullscreeen to second display in quil????
+- email them asking about the resolution of the projectors???
+- make animations dependant on screen size
+- re-record demo videos (use real software, not image dumping)
+- add button/link to demo slides to watch them in another tab
+
+- submit question:
+  - why have you chosen to do this in clojure? lisp is a AST, evluationin place is very natural, also I love clojure come see me after.
+  - why have you chosen to do this at all? I wrote my first lisp, I thought it would be fun to use it to write another lisp, byt now I had no state or mutation, Y combinatoor only option. I was annoyed that it worked firs try without me needing to understand it.
+
+
+- 19:07
