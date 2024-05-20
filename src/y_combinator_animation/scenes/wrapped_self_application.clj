@@ -720,7 +720,6 @@
     (= :1 (:key e)) (qpscene/transition state :self-application)
     (= :2 (:key e)) (qpscene/transition state :wrapped-self-application)
     (= :3 (:key e)) (qpscene/transition state :circles)
-    ;; (= :4 (:key e)) (qpscene/transition state :finale?)
 
     (= :space (:key e)) (handle-mouse-pressed state {:button :left})
 

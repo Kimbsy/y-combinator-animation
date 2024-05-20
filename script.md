@@ -318,3 +318,31 @@ And SICP is a classic, which among many, many other things contains useful secti
 
 
 Thanks for listening
+
+
+
+
+
+# Q&A
+
+> 1. What made you want to talk about the Y Combinator?
+
+Well I once found myself in one of those situations I listed where you don't have recursion.
+
+I was writing a Lisp, and I wanted it to be a pure functional Lisp. Then to demonstrate to myself that the language I had written was a 'real' language I tried to write a Lisp using it.
+
+Anyway I needed a way of implementing recursion, but I couldn't mutate my execution environment to allow functions to know refer to themselves after they've been defined (and I'm sure there are other better ways of doing that). But I read that the Y Combinator would do exactly what I needed, and it worked straight away first time. And honestly that kind of annoyed me, I didn't understand it and it looked like magic.
+
+So I wrote it on my whiteboard and I just looked at it and thought about it a bunch, and it was just honestly quite profound how much complexity there was in this tiny expression. What is it like 7 lines of code? And when it finally clicked and I first felt like I actually understood what it was doing, well I mean that always feels good, that grokking something super abstract and wriggly. Anyway I guess I just wanted to share that feeling.
+
+> 2. Why did you decide to use Clojure for this?
+
+I mean I just like Lisps? Honestly that's a big part of the reason. I use Clojure every day, and it's essentially just the language that I think in. If I come across some complex problem or concept, it's the default tool I reach for to explore that space.
+
+In addition to that, when you're writing in Lisp you're basically just writing the Abstract Syntax tree directly, there's not much difference between the structure you're writing and how it gets evaluated. And a big part of what I wanted to show in this talk is the way that these expressions evaluate, that was the thing that really made the Y Combinator click for me when I was learning about it.
+
+Of course you can (and probably should) explore the Y Combinator in a lazy, normal order evaluation language like Haskell, it's a lot simpler because you don't need to use those internal lambdas to delay evaluation.
+
+But hey, I think there's merit in understanding the complexity of doing it in an applicative order evaluation language.
+
+And again, I really do just like Lisps.

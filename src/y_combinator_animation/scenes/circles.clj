@@ -376,10 +376,10 @@
   (-> state
       (assoc-in [:scenes current-scene :delays]
                 (qpdelay/sequential-delays
-                 (let [ds [0 30 50 0 0 50 30]]
+                 (let [ds [0 40 50 0 0 50 50]]
                    (if continuing?
                      (map (fn [d f] [d f])
-                          [30 30]
+                          [50 50]
                           (drop 5 collapse-animation-sequence))
                      (map (fn [d f] [d f])
                           ds
@@ -436,7 +436,7 @@
       (assoc-in [:scenes current-scene :delays]
                 (qpdelay/sequential-delays
                  (map (fn [d f] [d f])
-                      [0 30 50 0 20 50]
+                      [0 40 50 0 20 50]
                       delayed-animation-sequence)))))
 
 (defn handle-mouse-pressed
@@ -467,7 +467,6 @@
     (= :1 (:key e)) (qpscene/transition state :self-application)
     (= :2 (:key e)) (qpscene/transition state :wrapped-self-application)
     (= :3 (:key e)) (qpscene/transition state :circles)
-    ;; (= :4 (:key e)) (qpscene/transition state :finale?)
 
     (= :a (:key e)) (-> state
                         (assoc :variant :a)

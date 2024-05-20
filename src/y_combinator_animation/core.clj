@@ -18,11 +18,12 @@
    :circles (circles/init)})
 
 (def y-combinator-animation-game
-  (qp/game {:title          "y-combinator-animation"
-            :size           :fullscreen
-            :setup          setup
-            :init-scenes-fn init-scenes
-            :current-scene  :self-application}))
+  (let [size 0.9]
+    (qp/game {:title          "y-combinator-animation"
+              :size           [(* 1920 size) (* 1080 size)] ; projector is 1920x1080
+              :setup          setup
+              :init-scenes-fn init-scenes
+              :current-scene  :self-application})))
 
 (defn -main
   [& args]

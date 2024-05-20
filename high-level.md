@@ -51,21 +51,12 @@ An understanding of functional programming is assumed. Experience with (or expos
 
 # TODO:
 
-- @TODO: THIS ONE NEXT make the delayed circle example animate slower, especially on the collapse
-
 - practice
 - practice with second screen, presentation mode, tabbing out to animations
 
-- can you send fullscreeen to second display in quil???? I think so, just `:display 1` in sketch setup? does this work with quip? no, would need to override `quip.core/run`. Also would need to make all text adjust to screen size.
-- make animations dependant on screen size
 - re-record demo videos (use real software, not image dumping)
 - add button/link to demo slides to watch them in another tab
 - delete current (legacy) video slides
-- @DONE sent email asking about projector resolution
-
-- submit questions:
-  - why have you chosen to do this in clojure? lisp is a AST, evluationin place is very natural, also I love clojure come see me after.
-  - why have you chosen to do this at all? I wrote my first lisp, I thought it would be fun to use it to write another lisp, byt now I had no state or mutation, Y combinatoor only option. I was annoyed that it worked firs try without me needing to understand it.
 
 
 # timings
