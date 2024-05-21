@@ -7,15 +7,11 @@
 >>>>>>>>>>>>>>>>>>>>
 
 
-
 # Part 1 - intro and primer
 
 ## Talk Intro
 
-Hi, I'm Dave, I'm a software engineer and amateur programming language designer. I work using Clojure for a company called Riverford Organic Farmers, so if you like lisps, functional programming or vegetables, come talk to me after.
-
-<!-- ... why am I talking about this? I was writing a toy language and needed to be able to iterate, but it was purely functional so had no mutation, our functions couldn't be defined referring to themselves. The y combinator is a solution to this, I tried it and it worked straight away. I felt uneasy that I didn't know how it was doing what it was doing, so I started trying to figure it out. -->
-
+Hi, I'm Dave, I'm a Clojure developer from the UK and a amateur programming language designer. I like Lisps, writing Lisps and writing Lisps in Lisps, so if you like those things too, come and talk to me afterwards.
 
 So today we're going to take a look at the Y Combinator. We'll look at what it is, what problem it solves, and hopefully we'll be able to develop some intuition as to how it works.
 
@@ -80,7 +76,7 @@ Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad
 
 ## Clojure primer
 
-So there's a chance that some of you haven't used Clojure before (see me afterwards, I'll get you hooked up). Dont' worry, Here's what you need to know to follow along.
+So there's a chance that some of you haven't used Clojure before (see me afterwards, I'll get you hooked up). Don't worry, Here's what you need to know to follow along.
 
 ### Call a function
 
@@ -101,7 +97,7 @@ We call a function by wrapping it in parens along with its arguments. We can nes
 (inc foo)   ;; => 43
 ```
 
-Defining variables is pretty straightforward, we use def to create a variable called `foo` and give it a value 42. We can then use it anywhere you'd expect to be able to.
+Defining variables is pretty straightforward, we use `def` to create a variable called `foo` and give it a value 42. We can then use it anywhere you'd expect to be able to.
 
 ### Lambda functions
 
@@ -231,7 +227,7 @@ Okay wow so we've got everything we need right? We already had the ability to do
 
 The last piece of the puzzle is how do we actually express the thing that we want done. And that means we need to nail down what `f` is.
 
-We saw that `f` contains both some conditional statement and also a reference to the lambda that allows it to iterate one level deeper. Let's take a crack at writing one.
+We saw that `f` contains both some conditional statement and also a reference to the lambda that allows it to iterate one level deeper. With that in mind, we can take a crack at writing one.
 
 ## what the f?
 
@@ -251,9 +247,9 @@ Each execution of `f` represents one step in our recursive solution, so let's st
 
 We know the internal lambda is what allows us to recur, so let's rename that too.
 
-`count-step` is going to want to return a lambda which we will end up calling `count`, it will be returned to us by the Y Combinator. This function will expect our input collection that we want counted, so let's add that.
+`count-step` is going to want to return a lambda which we will end up naming `count`, it will be returned to us by the Y Combinator. This `count` function will expect our input collection that we want counted, so let's add that.
 
-We also want to make sure that this input collection is passed on to the next iteration by passing it to the `recur-fn` each iteration.
+We also want to make sure that this input collection is passed on to the next step by passing it to the `recur-fn` each iteration.
 
 Now we just need to make the condition a function of the input collection.
 
@@ -331,7 +327,7 @@ Well I once found myself in one of those situations I listed where you don't hav
 
 I was writing a Lisp, and I wanted it to be a pure functional Lisp. Then to demonstrate to myself that the language I had written was a 'real' language I tried to write a Lisp using it.
 
-Anyway I needed a way of implementing recursion, but I couldn't mutate my execution environment to allow functions to know refer to themselves after they've been defined (and I'm sure there are other better ways of doing that). But I read that the Y Combinator would do exactly what I needed, and it worked straight away first time. And honestly that kind of annoyed me, I didn't understand it and it looked like magic.
+Anyway I needed a way of implementing recursion, but I couldn't mutate my execution environment to allow functions to refer to themselves after they've been defined (and I'm sure there are other better ways of doing that). But I read that the Y Combinator would do exactly what I needed, and it worked straight away first time. And honestly that kind of annoyed me, I didn't understand it and it looked like magic.
 
 So I wrote it on my whiteboard and I just looked at it and thought about it a bunch, and it was just honestly quite profound how much complexity there was in this tiny expression. What is it like 7 lines of code? And when it finally clicked and I first felt like I actually understood what it was doing, well I mean that always feels good, that grokking something super abstract and wriggly. Anyway I guess I just wanted to share that feeling.
 

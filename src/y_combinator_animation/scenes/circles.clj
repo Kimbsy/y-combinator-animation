@@ -8,8 +8,6 @@
             [clojure.string :as s]
             [y-combinator-animation.common :as common]))
 
-;; @TODO: we probably want this to be based on the screen size? how
-;; big is the projector?????
 (def text-size (* 4 qpu/default-text-size))
 
 ;; magic variable for pleasant vertical line spacing
