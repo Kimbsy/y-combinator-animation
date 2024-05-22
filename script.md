@@ -1,6 +1,6 @@
 >>>>>>>>>>>>>>>>>>>>
 
-@NOTE! run a repl, get the animation running in the background
+@NOTE! get the animation running in the background (`nohup lein run`)
 @NOTE! make sure you get to the DEMO slides before tabbing out
 @NOTE! pace yourself, pause for jokes
 
@@ -11,7 +11,7 @@
 
 ## Talk Intro
 
-Hi, I'm Dave, I'm a Clojure developer from the UK and a amateur programming language designer. I like Lisps, writing Lisps and writing Lisps in Lisps, so if you like those things too, come and talk to me afterwards.
+Hi, I'm Dave, I'm a Clojure developer from the UK and an amateur programming language designer. I like Lisps, writing in Lisps and writing Lisps in Lisps, so if you like those things too, come and talk to me afterwards.
 
 So today we're going to take a look at the Y Combinator. We'll look at what it is, what problem it solves, and hopefully we'll be able to develop some intuition as to how it works.
 
@@ -60,7 +60,7 @@ So that's what the Y Combinator is for:
 
 > Doing recursion in languages that don’t have recursion.
 
-When does that happen? What languages don't have recursion? 
+When does that happen? What languages don't have recursion?
 
 Well maybe you're a Mathematician working in the Lambda Calculus. <CLICK> How often does one do meaningful work in an abstract computational calculus? Arguably not every day.
 
@@ -68,7 +68,7 @@ Maybe you're writing your own language, <CLICK> and you're trying to do so in a 
 
 <CLICK>
 
-Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad set of circumstances... 
+Okay, so clearly the Y Combinator is incredibly useful and applicable in a broad set of circumstances...
 
 
 
@@ -171,10 +171,6 @@ So what we have here is a loop, it does nothing and we can't stop it, but it's s
 
 Two questions naturally arise. Can we get it to do something? And can we stop it?
 
-facts               questions
-- does nothing     - can we make it do something?
-- can't stop it    - can we stop it?
-
 ## wrapped self application function
 
 ``` Clojure
@@ -185,7 +181,7 @@ In order to start answering those questions we're going to jump back to the Y co
 
 Now this is a little more complex than we need it to be for now, so we're going to look at a simpler version first and we'll come back to this one afterwards.
 
-This function is very similar to the previous self-application function, but we have this extra call to `f` in there. We don't need to know what `f` is at this point, but just assume it is a function that exists. <CLICK>
+This function is very similar to the previous self-application function, but we have this extra call to `f` in there. We don't need to know what `f` is at this point, but just assume it is a function that exists.
 
 What happens when we apply this expression to itself?
 
@@ -219,7 +215,7 @@ Well, It will invoke `f` applied to this internal lambda, and this lambda is rea
 
 So `f` is going to be passed this lambda as an argument, which it can choose to invoke or not, and if it decides to invoke it it will execute the `(x x)` letting us go one layer deeper into the infinite evaluation loop, and in doing so creating another nested call to `f` which can make the same choice. Each layer has the ability to create the next layer if it wants to.
 
-The evaluation of this expression is more complex then the previous two so lets look at it with a different kind of visualisation.
+The evaluation of this expression is more complex than the previous two so let's look at it with a different kind of visualisation.
 
 > DEMO or video, high level simulation of creating a chain of bubbles which dynamically decide whether to extend the chain
 
@@ -243,11 +239,11 @@ Here's a function which takes that internal lambda as an argument, and if some c
 
 Now this is close, but it's not quite what we want, so to concretize our `f` function let's consider a real life problem. Counting the number of elements in a collection.
 
-Each execution of `f` represents one step in our recursive solution, so let's start give it a better name.
+Each execution of `f` represents one step in our recursive solution, so let's start give it a better name, `count-step`.
 
 We know the internal lambda is what allows us to recur, so let's rename that too.
 
-`count-step` is going to want to return a lambda which we will end up naming `count`, it will be returned to us by the Y Combinator. This `count` function will expect our input collection that we want counted, so let's add that.
+`count-step` is going to want to return a lambda, this will be the function returned to us by the Y Combinator. This function will expect our input collection that we want counted, so let's add that.
 
 We also want to make sure that this input collection is passed on to the next step by passing it to the `recur-fn` each iteration.
 
@@ -276,11 +272,11 @@ Ok, with our `count-step` function defined, we are finally ready to do some work
 (count [8 4 7])     ;; => 3
 ```
 
-We can invoke the Y Combinator on our `count-step` function. This will return a new function which we call `count`. At this point `count` contains a reference to the function that creates the next step as well as the condition for when we should go deeper, and it expects as an argument the input collection we're interested in.
+We can invoke the Y Combinator, which is this function `Y` here on our `count-step` function. This will return a new function which we call `count`. At this point `count` contains a reference to the function that creates the next step as well as the condition for when we should go deeper, and it expects as an argument the input collection we're interested in.
 
 So the Y combinator gives us a function which is ready to turn itself into a stack of nested invocations of `count-step`. When we give this function an input collection it will pass this argument down the stack cutting off values one at a time until the collection is empty. That satisfies our base case and that iteration will return a zero. This zero is then passed back up the stack to be incremented by each previous step until the final, outermost function call returns the number of elements in the original input collection.
 
-
+And that’s it, we have successfully counted a collection using only pure non-recursive functions.
 
 
 
@@ -313,7 +309,7 @@ And SICP is a classic, which among many, many other things contains useful secti
 
 
 
-Thanks for listening
+Thanks for listening!
 
 
 

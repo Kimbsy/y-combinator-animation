@@ -491,6 +491,6 @@
   {:sprites (sprites)
    :draw-fn draw-circles
    :update-fn update-circles
-   :mouse-pressed-fns [handle-mouse-pressed]
+;;   :mouse-pressed-fns [handle-mouse-pressed]
    :key-pressed-fns [handle-key-pressed]
    :next-transition 0})

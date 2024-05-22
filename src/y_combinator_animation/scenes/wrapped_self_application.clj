@@ -734,7 +734,7 @@
     {:sprites (sprites initial-content)
      :draw-fn draw-wrapped-self-application
      :update-fn update-wrapped-self-application
-     :mouse-pressed-fns [handle-mouse-pressed]
+;;     :mouse-pressed-fns [handle-mouse-pressed]
      :key-pressed-fns [handle-key-pressed]
      :next-transition 0
      :content initial-content}))
