@@ -434,7 +434,7 @@
       (assoc-in [:scenes current-scene :delays]
                 (qpdelay/sequential-delays
                  (map (fn [d f] [d f])
-                      [0 40 50 0 20 50]
+                      [0 40 50 0 20 100]
                       delayed-animation-sequence)))))
 
 (defn handle-mouse-pressed
